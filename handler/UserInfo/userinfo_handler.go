@@ -16,10 +16,6 @@ type UserResponse struct {
 	User *User `json:"user"` // 用户信息
 }
 
-type Like struct {
-	VideoID []Model.Video //点赞视频ID列表，Has Many关系
-}
-
 func (u *User) NewUser() {
 
 }

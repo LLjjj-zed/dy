@@ -1,6 +1,5 @@
 package Model
 
-
 import (
 	"douyin.core/config"
 	"gorm.io/driver/mysql"
@@ -21,5 +20,4 @@ func InitDB() {
 		log.Fatal(err)
 	}
 	//err = DB.AutoMigrate(&UserInfo{}, &Video{}, &Comment{}, &UserLogin{})
-
 }

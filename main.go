@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/RaymondCode/simple-demo/service"
+	"douyin.core/service"
 	"github.com/gin-gonic/gin"
 )
 

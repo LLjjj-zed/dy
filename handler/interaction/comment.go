@@ -2,7 +2,7 @@ package interaction
 
 import (
 	"douyin.core/Model"
-	user "douyin.core/handler/User"
+	user "douyin.core/handler/UserInfo"
 	"github.com/gin-gonic/gin"
 )
 
@@ -47,6 +47,8 @@ func CommentAction(c *gin.Context) {
 		if err != nil {
 			//
 		}
+	} else {
+
 	}
 }
 

@@ -125,3 +125,15 @@ func ctxTokenToUser(c *gin.Context, roleId uint) {
 	c.Next()
 	// after request
 }
+
+func mWuserId(c *gin.Context) (int64, error) {
+	v, exist := c.Get(contextKeyUserObj)
+	if !exist {
+		return 0, errors.New(contextKeyUserObj + " not exist")
+	}
+	user, ok := v.(PostUserLogin)
+	if ok {
+		return user.userid, nil
+	}
+	return 0, errors.New("can't convert to user struct")
+}

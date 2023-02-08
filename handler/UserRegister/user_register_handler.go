@@ -2,6 +2,7 @@ package UserRegister
 
 import (
 	"douyin.core/Model"
+	"douyin.core/middleware"
 	"errors"
 	"github.com/gin-gonic/gin"
 	"net/http"
@@ -22,10 +23,10 @@ type UserRegisterReponse struct {
 
 // 用户登录校验
 type PostUserLogin struct {
-	username string
-	password string
-	userid   int64
-	token    string
+	Username string
+	Password string
+	Userid   int64
+	Token    string
 }
 
 func UserLoginHandler(c *gin.Context) {
@@ -72,7 +73,7 @@ func (u *PostUserLogin) Regist() error {
 
 // 创建对象，用于注册
 func NewPostUserLogin(username, password string) *PostUserLogin {
-	return &PostUserLogin{username: username, password: password}
+	return &PostUserLogin{Username: username, Password: password}
 }
 
 // 将用户数据持久化到数据库并检查是否出现用户名重复的现象
@@ -81,27 +82,27 @@ func (u *PostUserLogin) PersistData() error {
 }
 
 func (u *PostUserLogin) SetToken() error {
-	token, err := jwtGenerateToken(u, time.Hour)
+	token, err := middleware.JwtGenerateToken(u, time.Hour)
 	if err != nil {
 		return err
 	}
-	u.token = token
+	u.Token = token
 	return nil
 }
 
 // 检查用户登录时的用户名和密码是否合法
 func (u *PostUserLogin) CheckPost() error {
-	if u.username == "" {
+	if u.Username == "" {
 		return errors.New("用户名不能为空")
 	}
-	if len(u.username) > MaxUsernameLength {
+	if len(u.Username) > MaxUsernameLength {
 		return errors.New("用户名过长")
 	}
 
-	if len(u.password) > MaxPasswordLength {
+	if len(u.Password) > MaxPasswordLength {
 		return errors.New("密码过长")
 	}
-	if len(u.password) < MinPasswordLength {
+	if len(u.Password) < MinPasswordLength {
 		return errors.New("密码不能少于5位")
 	}
 	return nil
@@ -113,8 +114,8 @@ func RegisterOK(c *gin.Context, login *PostUserLogin) {
 		CommonResponse: Model.CommonResponse{
 			StatusCode: 0,
 		},
-		UserID: login.userid,
-		Token:  login.token,
+		UserID: login.Userid,
+		Token:  login.Token,
 	})
 }
 

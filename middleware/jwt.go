@@ -1,7 +1,8 @@
-package UserRegister
+package middleware
 
 import (
 	"douyin.core/Model"
+	"douyin.core/handler/UserRegister"
 	"errors"
 	"fmt"
 	"github.com/dgrijalva/jwt-go"
@@ -18,7 +19,7 @@ var AppIss = "github.com/libragen/felix" //这个值会被viper.GetString重写
 // 自定义payload结构体,不建议直接使用 dgrijalva/jwt-go `jwt.StandardClaims`结构体.因为他的payload包含的用户信息太少.
 type userStdClaims struct {
 	jwt.StandardClaims
-	*PostUserLogin
+	Userid int64
 }
 
 // 实现 `type Claims interface` 的 `Valid() error` 方法,自定义校验内容
@@ -31,26 +32,26 @@ func (c userStdClaims) Valid() (err error) {
 	if !c.VerifyIssuer(AppIss, true) {
 		return errors.New("token's issuer is wrong")
 	}
-	if c.PostUserLogin.userid < 1 {
+	if c.Userid < 1 {
 		return errors.New("invalid user in jwt")
 	}
 	return
 }
 
 // token生成
-func jwtGenerateToken(u *PostUserLogin, d time.Duration) (string, error) {
-	u.password = ""
+func JwtGenerateToken(u *UserRegister.PostUserLogin, d time.Duration) (string, error) {
+	u.Password = ""
 	expireTime := time.Now().Add(d)
 	stdClaims := jwt.StandardClaims{
 		ExpiresAt: expireTime.Unix(),
 		IssuedAt:  time.Now().Unix(),
-		Id:        fmt.Sprintf("%d", u.userid),
+		Id:        fmt.Sprintf("%d", u.Userid),
 		Issuer:    AppIss,
 	}
 
 	uClaims := userStdClaims{
 		StandardClaims: stdClaims,
-		PostUserLogin:  u,
+		Userid:         u.Userid,
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, uClaims)
@@ -131,9 +132,9 @@ func mWuserId(c *gin.Context) (int64, error) {
 	if !exist {
 		return 0, errors.New(contextKeyUserObj + " not exist")
 	}
-	user, ok := v.(PostUserLogin)
+	user, ok := v.(UserRegister.PostUserLogin)
 	if ok {
-		return user.userid, nil
+		return user.Userid, nil
 	}
 	return 0, errors.New("can't convert to user struct")
 }

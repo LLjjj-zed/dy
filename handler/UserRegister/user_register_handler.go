@@ -2,8 +2,10 @@ package UserRegister
 
 import (
 	"douyin.core/Model"
+	UserInfo "douyin.core/handler/UserInfo"
 	"douyin.core/middleware"
 	"errors"
+	"github.com/bwmarrin/snowflake"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"time"
@@ -14,6 +16,22 @@ const (
 	MaxPasswordLength = 18
 	MinPasswordLength = 5
 )
+
+// id生成器全局节点
+var node *snowflake.Node
+
+// id生成器初始化函数
+func Init(startTime string, machineID int64) (err error) {
+	var st time.Time
+	st, err = time.Parse("2023-02-02", startTime)
+	if err != nil {
+		return
+	}
+	// 设置时间
+	snowflake.Epoch = st.UnixNano() / 1000000
+	node, err = snowflake.NewNode(machineID)
+	return
+}
 
 type UserRegisterReponse struct {
 	Model.CommonResponse
@@ -43,9 +61,11 @@ func UserLoginHandler(c *gin.Context) {
 	//注册新用户
 	err := newPostUserLogin.Regist()
 	if err != nil {
+		//返回错误信息
 		RegisterErr(c, err.Error())
 		return
 	}
+	//返回正确信息
 	RegisterOK(c, newPostUserLogin)
 }
 
@@ -56,17 +76,21 @@ func (u *PostUserLogin) Regist() error {
 	if err != nil {
 		return err
 	}
+
+	//获取userid
+	u.UserIdGenarate()
+
 	//持久化到数据库
 	err = u.PersistData()
 	if err != nil {
 		return err
 	}
+
 	//获取token
 	err = u.SetToken()
 	if err != nil {
 		return err
 	}
-	//获取userid
 
 	return nil
 }
@@ -78,9 +102,25 @@ func NewPostUserLogin(username, password string) *PostUserLogin {
 
 // 将用户数据持久化到数据库并检查是否出现用户名重复的现象
 func (u *PostUserLogin) PersistData() error {
+	userDAO := UserInfo.NewUserInfoDao()
+	userRigestDao := NewUserRigisterDao()
+	queryuser := userDAO.GetUserByUserName(u.Username)
+	if u.Username == queryuser.Name {
+		err := errors.New("用户名已存在，请重试")
+		return err
+	}
+	err := userDAO.InsertToUserInfoTable(u.Userid, u.Username)
+	if err != nil {
+		return err
+	}
+	err = userRigestDao.RegistUsertoDb(u.Userid, u.Username, u.Password)
+	if err != nil {
+		return err
+	}
 	return nil
 }
 
+// 获取token
 func (u *PostUserLogin) SetToken() error {
 	token, err := middleware.JwtGenerateToken(u, time.Hour)
 	if err != nil {
@@ -88,6 +128,10 @@ func (u *PostUserLogin) SetToken() error {
 	}
 	u.Token = token
 	return nil
+}
+
+func (u *PostUserLogin) UserIdGenarate() {
+	u.Userid = node.Generate().Int64()
 }
 
 // 检查用户登录时的用户名和密码是否合法

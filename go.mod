@@ -4,6 +4,7 @@ go 1.17
 
 require (
 	github.com/RaymondCode/simple-demo v0.0.0-20230109111057-5031aee01508
+	github.com/bwmarrin/snowflake v0.3.0
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/gavv/httpexpect/v2 v2.8.0
 	github.com/gin-gonic/gin v1.8.1

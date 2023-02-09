@@ -1,14 +1,12 @@
-package UserLogin
+package User
 
 import (
-	"douyin.core/Model"
-	"douyin.core/handler/UserRegister"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
 
 type UserLoginResponse struct {
-	Model.CommonResponse
+	CommonResponse
 	Token  string `json:"token"`   // 用户鉴权token
 	UserID int64  `json:"user_id"` // 用户id
 }
@@ -27,9 +25,9 @@ func UserLoginHandler(c *gin.Context) {
 	}
 	password := get.(string)
 	//创建用户登录表对象
-	userlogin := UserRegister.NewUserLoginTable(username, password)
+	userlogin := NewUserLoginTable(username, password)
 	//创建用户登陆表数据操作对象
-	userlogindao := UserRegister.NewUserRigisterDao()
+	userlogindao := NewUserRigisterDao()
 	//验证用户账户密码
 	err := userlogindao.QueryUserLogin(username, password, userlogin)
 	if err != nil {
@@ -37,7 +35,7 @@ func UserLoginHandler(c *gin.Context) {
 		return
 	}
 	//获取token
-	postUserLogin := UserRegister.NewPostUserLogin(username, password)
+	postUserLogin := NewPostUserLogin(username, password)
 	err = postUserLogin.SetToken()
 	if err != nil {
 		LoginErr(c, err.Error())
@@ -53,7 +51,7 @@ func UserLoginHandler(c *gin.Context) {
 // 返回正确信息
 func LoginOK(c *gin.Context, login *UserLoginResponse) {
 	c.JSON(http.StatusOK, UserLoginResponse{
-		CommonResponse: Model.CommonResponse{
+		CommonResponse: CommonResponse{
 			StatusCode: 0,
 		},
 		UserID: login.UserID,
@@ -64,7 +62,7 @@ func LoginOK(c *gin.Context, login *UserLoginResponse) {
 // 返回错误信息
 func LoginErr(c *gin.Context, errmessage string) {
 	c.JSON(http.StatusOK, UserLoginResponse{
-		CommonResponse: Model.CommonResponse{
+		CommonResponse: CommonResponse{
 			StatusCode: 1,
 			StatusMsg:  errmessage,
 		},

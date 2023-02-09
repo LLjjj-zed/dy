@@ -1,8 +1,6 @@
 package middleware
 
 import (
-	"douyin.core/Model"
-	"douyin.core/handler/UserRegister"
 	"errors"
 	"fmt"
 	"github.com/dgrijalva/jwt-go"
@@ -13,8 +11,13 @@ import (
 	"time"
 )
 
-var AppSecret = ""                       //viper.GetString会设置这个值(32byte长度)
-var AppIss = "github.com/libragen/felix" //这个值会被viper.GetString重写
+var AppSecret = "" //viper.GetString会设置这个值(32byte长度)
+var AppIss = "https://github.com/132982317/douyin-demo"
+
+type CommonResponse struct {
+	StatusCode int64  `json:"status_code"` // 状态码，0-成功，其他值-失败
+	StatusMsg  string `json:"status_msg"`  // 返回状态描述
+}
 
 // 自定义payload结构体,不建议直接使用 dgrijalva/jwt-go `jwt.StandardClaims`结构体.因为他的payload包含的用户信息太少.
 type userStdClaims struct {
@@ -39,19 +42,18 @@ func (c userStdClaims) Valid() (err error) {
 }
 
 // token生成
-func JwtGenerateToken(u *UserRegister.PostUserLogin, d time.Duration) (string, error) {
-	u.Password = ""
+func JwtGenerateToken(Userid int64, d time.Duration) (string, error) {
 	expireTime := time.Now().Add(d)
 	stdClaims := jwt.StandardClaims{
 		ExpiresAt: expireTime.Unix(),
 		IssuedAt:  time.Now().Unix(),
-		Id:        fmt.Sprintf("%d", u.Userid),
+		Id:        fmt.Sprintf("%d", Userid),
 		Issuer:    AppIss,
 	}
 
 	uClaims := userStdClaims{
 		StandardClaims: stdClaims,
-		Userid:         u.Userid,
+		Userid:         Userid,
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, uClaims)
@@ -85,7 +87,7 @@ func JwtParseUser(tokenString string) (*userStdClaims, error) {
 const contextKeyUserObj = "authedUserObj"
 const bearerLength = len("Bearer ")
 
-func ctxTokenToUser(c *gin.Context, roleId uint) {
+func ctxTokenToUser(c *gin.Context) { //roleId uint
 	token, ok := c.GetQuery("token")
 	if !ok {
 		hToken := c.GetHeader("Authorization")
@@ -97,7 +99,7 @@ func ctxTokenToUser(c *gin.Context, roleId uint) {
 	}
 	usr, err := JwtParseUser(token)
 	if err != nil {
-		c.JSON(http.StatusOK, Model.CommonResponse{
+		c.JSON(http.StatusOK, CommonResponse{
 			StatusCode: 403,
 			StatusMsg:  "token不正确",
 		})
@@ -113,7 +115,7 @@ func ctxTokenToUser(c *gin.Context, roleId uint) {
 
 	//token超时
 	if time.Now().Unix() > usr.ExpiresAt {
-		c.JSON(http.StatusOK, Model.CommonResponse{
+		c.JSON(http.StatusOK, CommonResponse{
 			StatusCode: 402,
 			StatusMsg:  "token过期",
 		})
@@ -125,16 +127,4 @@ func ctxTokenToUser(c *gin.Context, roleId uint) {
 	c.Set(contextKeyUserObj, *usr)
 	c.Next()
 	// after request
-}
-
-func MwuserId(c *gin.Context) (int64, error) {
-	v, exist := c.Get(contextKeyUserObj)
-	if !exist {
-		return 0, errors.New(contextKeyUserObj + " not exist")
-	}
-	user, ok := v.(UserRegister.PostUserLogin)
-	if ok {
-		return user.Userid, nil
-	}
-	return 0, errors.New("can't convert to user struct")
 }

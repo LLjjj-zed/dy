@@ -1,13 +1,12 @@
-package user
+package User
 
 import (
-	"douyin.core/Model"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
 
 type UserResponse struct {
-	Model.CommonResponse
+	CommonResponse
 	User *User `json:"user"` // 用户信息
 }
 
@@ -29,7 +28,7 @@ func UserInfoHandler(c *gin.Context) {
 // 返回正确信息
 func UserInfoOK(c *gin.Context, login *User) {
 	c.JSON(http.StatusOK, UserResponse{
-		CommonResponse: Model.CommonResponse{
+		CommonResponse: CommonResponse{
 			StatusCode: 0,
 		},
 		User: &User{
@@ -45,7 +44,7 @@ func UserInfoOK(c *gin.Context, login *User) {
 // 返回错误信息
 func UserInfoErr(c *gin.Context, code int64, errmessage string) {
 	c.JSON(http.StatusOK, UserResponse{
-		CommonResponse: Model.CommonResponse{
+		CommonResponse: CommonResponse{
 			StatusCode: code,
 			StatusMsg:  errmessage,
 		},

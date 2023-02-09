@@ -1,7 +1,7 @@
 package Model
 
 import (
-	user "douyin.core/handler/UserInfo"
+	user "douyin.core/handler/User"
 	"gorm.io/gorm"
 )
 

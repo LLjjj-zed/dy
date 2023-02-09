@@ -1,4 +1,4 @@
-package UserRegister
+package User
 
 import (
 	"douyin.core/Model"

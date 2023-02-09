@@ -2,7 +2,8 @@ package interaction
 
 import (
 	"douyin.core/Model"
-	user "douyin.core/handler/UserInfo"
+	"douyin.core/handler/User"
+	user "douyin.core/handler/User"
 	"douyin.core/middleware"
 	"errors"
 	"github.com/gin-gonic/gin"
@@ -15,7 +16,7 @@ import (
 // CommentResponse 评论回应结构
 type CommentResponse struct {
 	Comment
-	Model.CommonResponse // 返回状态描述
+	User.CommonResponse // 返回状态描述
 }
 
 // Users 评论用户信息
@@ -43,9 +44,11 @@ func CommentAction(c *gin.Context) {
 	//将请求映射到结构中
 	var Req CommentRequest
 	_ = c.ShouldBindJSON(&Req)
+
+	token := c.Query("token")
 	//获取用户信息
 	var err error = nil
-	usrid, err := middleware.MwuserId(c)
+	usrid, err := middleware.JwtParseUser(token)
 	userDao := user.NewUserInfoDao()
 	usr, err := userDao.GetUserByuserID(usrid)
 	if err != nil {
@@ -85,13 +88,14 @@ func CommentAction(c *gin.Context) {
 
 // GetCommentList 获取评论列表
 func GetCommentList(c *gin.Context) {
-	_, err := middleware.MwuserId(c)
+	token := c.Query("token")
+	_, err := middleware.JwtParseUser(token)
 	if err != nil {
 		return
 	}
 	VideoID, err := strconv.ParseInt(c.Query("video_id"), 10, 64)
 	if err != nil {
-		c.JSON(http.StatusOK, Model.CommonResponse{
+		c.JSON(http.StatusOK, User.CommonResponse{
 			StatusCode: -1,
 			StatusMsg:  "comment videoId json invalid",
 		})
@@ -120,7 +124,7 @@ func CommentOK(c *gin.Context, cmt *Comment) {
 			ID:         cmt.ID,
 			User:       cmt.User,
 		},
-		Model.CommonResponse{
+		User.CommonResponse{
 			StatusCode: 0,
 			StatusMsg:  "",
 		},

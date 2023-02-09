@@ -1,8 +1,8 @@
 package Model
 
 import (
-	user "douyin.core/handler/UserInfo"
 	"gorm.io/gorm"
+	"os/user"
 )
 
 type Comment struct {

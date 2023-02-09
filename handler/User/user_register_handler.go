@@ -1,8 +1,6 @@
-package UserRegister
+package User
 
 import (
-	"douyin.core/Model"
-	UserInfo "douyin.core/handler/UserInfo"
 	"douyin.core/middleware"
 	"errors"
 	"github.com/bwmarrin/snowflake"
@@ -34,7 +32,7 @@ func Init(startTime string, machineID int64) (err error) {
 }
 
 type UserRegisterReponse struct {
-	Model.CommonResponse
+	CommonResponse
 	Token  string `json:"token"`   // 用户鉴权token
 	UserID int64  `json:"user_id"` // 用户id
 }
@@ -103,7 +101,7 @@ func NewPostUserLogin(username, password string) *PostUserLogin {
 // 将用户数据持久化到数据库并检查是否出现用户名重复的现象
 func (u *PostUserLogin) PersistData() error {
 	//创建用户表数据操作对象
-	userDAO := UserInfo.NewUserInfoDao()
+	userDAO := NewUserInfoDao()
 	//创建用户注册表数据操作对象
 	userRigestDao := NewUserRigisterDao()
 	//检查用户名是否已经存在
@@ -130,7 +128,7 @@ func (u *PostUserLogin) PersistData() error {
 
 // 获取token
 func (u *PostUserLogin) SetToken() error {
-	token, err := middleware.JwtGenerateToken(u, time.Hour)
+	token, err := middleware.JwtGenerateToken(u.Userid, time.Hour)
 	if err != nil {
 		return err
 	}
@@ -163,7 +161,7 @@ func (u *PostUserLogin) CheckPost() error {
 // 返回正确信息
 func RegisterOK(c *gin.Context, login *PostUserLogin) {
 	c.JSON(http.StatusOK, UserRegisterReponse{
-		CommonResponse: Model.CommonResponse{
+		CommonResponse: CommonResponse{
 			StatusCode: 0,
 		},
 		UserID: login.Userid,
@@ -174,7 +172,7 @@ func RegisterOK(c *gin.Context, login *PostUserLogin) {
 // 返回错误信息
 func RegisterErr(c *gin.Context, errmessage string) {
 	c.JSON(http.StatusOK, UserRegisterReponse{
-		CommonResponse: Model.CommonResponse{
+		CommonResponse: CommonResponse{
 			StatusCode: 1,
 			StatusMsg:  errmessage,
 		},

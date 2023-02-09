@@ -127,7 +127,7 @@ func ctxTokenToUser(c *gin.Context, roleId uint) {
 	// after request
 }
 
-func mWuserId(c *gin.Context) (int64, error) {
+func MwuserId(c *gin.Context) (int64, error) {
 	v, exist := c.Get(contextKeyUserObj)
 	if !exist {
 		return 0, errors.New(contextKeyUserObj + " not exist")

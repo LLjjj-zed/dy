@@ -8,7 +8,7 @@ import (
 type Comment struct {
 	gorm.Model
 	Video Video     `gorm:"foreignKey:VideoID"`
-	User  user.User `gorm:"foreignKey:ID"`
+	User  user.User `gorm:"foreignKey:ID; references:ID"`
 
 	CommentID  uint   `json:"commentID" gorm:"primary key;auto increment"`
 	VideoID    int64  `json:"videoId" `

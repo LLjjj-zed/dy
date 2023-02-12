@@ -3,6 +3,8 @@ package Video
 import (
 	"douyin.core/Model"
 	user "douyin.core/handler/User"
+	"errors"
+	"gorm.io/gorm"
 )
 
 // Video
@@ -49,15 +51,15 @@ func (v *VideoDao) PersistNewVideo(title string, userid int64, user *user.UserIn
 	return Model.DB.Create(video).Error
 }
 
-// todo 未完成
 func (v *VideoDao) GetUserVideoCode(userid int64) (int64, error) {
-	var video Video
-	err := Model.DB.Where("").Last(&video).Error
+	var videocode int64
+	err := Model.DB.Select("videocode").Where("userid=?", userid).First(&videocode).Error
+	is := errors.Is(err, gorm.ErrRecordNotFound)
+	if is {
+		return 0, err
+	}
 	if err != nil {
 		return -1, err
 	}
-	if video.ID == 0 {
-		return 0, nil
-	}
-	return video.UserVideocode + 1, nil
+	return videocode + 1, nil
 }

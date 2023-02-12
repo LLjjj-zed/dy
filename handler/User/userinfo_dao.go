@@ -42,11 +42,20 @@ func (u *UserInfoDao) InsertToUserInfoTable(userid int64, username string) error
 }
 
 // 通过用户ID查找用户
-func (u UserInfoDao) GetUserByuserID(userid interface{}) (*User, error) {
+func (u *UserInfoDao) GetUserByuserID(userid interface{}) (*User, error) {
 	var user User
 	err := Model.DB.Where("id=?", userid).First(&user).Error
 	if err != nil {
 		return nil, err
 	}
 	return &user, nil
+}
+
+func (u *UserInfoDao) GetUserNameByUserID(userid int64) (string, error) {
+	var username string
+	err := Model.DB.Select("username").Where("user_id=?", userid).First(&username).Error
+	if err != nil {
+		return "", err
+	}
+	return username, nil
 }

@@ -45,8 +45,11 @@ func PublishVedioHandler(c *gin.Context) {
 	}
 	code := strconv.Itoa(int(codeint))
 	var userinfo user.UserInfoDao
-	//todo 查询username
-	name := "username"
+	username, err := userinfo.GetUserNameByUserID(userid)
+	name := username
+	if err != nil {
+		PublishvideoErr(c, err.Error())
+	}
 	var build strings.Builder
 	build.WriteString(name)
 	build.WriteString("code")

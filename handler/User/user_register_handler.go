@@ -5,6 +5,7 @@ import (
 	"errors"
 	"github.com/bwmarrin/snowflake"
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 	"net/http"
 	"time"
 )
@@ -105,25 +106,24 @@ func (u *PostUserLogin) PersistData() error {
 	//创建用户注册表数据操作对象
 	userRigestDao := NewUserRigisterDao()
 	//检查用户名是否已经存在
-	queryuser, err := userDAO.GetUserByUserName(u.Username)
-	if err != nil {
-		return err
-	}
-	if u.Username == queryuser.Name {
+	_, err := userDAO.GetUserByUserName(u.Username)
+	is := errors.Is(err, gorm.ErrRecordNotFound)
+	if is {
+		//将数据持久化到用户表
+		err = userDAO.InsertToUserInfoTable(u.Userid, u.Username)
+		if err != nil {
+			return err
+		}
+		//将数据持久化到用户注册表
+		err = userRigestDao.RegistUsertoDb(u.Userid, u.Username, u.Password)
+		if err != nil {
+			return err
+		}
+		return nil
+	} else {
 		err := errors.New("用户名已存在，请重试")
 		return err
 	}
-	//将数据持久化到用户表
-	err = userDAO.InsertToUserInfoTable(u.Userid, u.Username)
-	if err != nil {
-		return err
-	}
-	//将数据持久化到用户注册表
-	err = userRigestDao.RegistUsertoDb(u.Userid, u.Username, u.Password)
-	if err != nil {
-		return err
-	}
-	return nil
 }
 
 // 获取token
@@ -136,6 +136,7 @@ func (u *PostUserLogin) SetToken() error {
 	return nil
 }
 
+// 用户id生成
 func (u *PostUserLogin) UserIdGenarate() {
 	u.Userid = node.Generate().Int64()
 }

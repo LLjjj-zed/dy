@@ -5,12 +5,14 @@ import (
 	"net/http"
 )
 
+// 用户登录回复结构体
 type UserLoginResponse struct {
 	CommonResponse
 	Token  string `json:"token"`   // 用户鉴权token
 	UserID int64  `json:"user_id"` // 用户id
 }
 
+// 用户登录回复结构体构造函数
 func NewUserLoginResponse() *UserLoginResponse {
 	return &UserLoginResponse{}
 }

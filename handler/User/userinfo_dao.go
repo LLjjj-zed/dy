@@ -4,6 +4,7 @@ import (
 	"douyin.core/Model"
 )
 
+// 用户信息表
 type User struct {
 	FollowCount   int64  `gorm:"follow_count" json:"follow_count"`     // 关注总数
 	FollowerCount int64  `gorm:"follower_count" json:"follower_count"` // 粉丝总数
@@ -12,9 +13,11 @@ type User struct {
 	Name          string `gorm:"name" json:"name"`                     // 用户名称
 }
 
+// 用户信息数据操作结构体
 type UserInfoDao struct {
 }
 
+// 用户信息数据操作结构体构造函数
 func NewUserInfoDao() *UserInfoDao {
 	return &UserInfoDao{}
 }
@@ -42,11 +45,21 @@ func (u *UserInfoDao) InsertToUserInfoTable(userid int64, username string) error
 }
 
 // 通过用户ID查找用户
-func (u UserInfoDao) GetUserByuserID(userid interface{}) (*User, error) {
+func (u *UserInfoDao) GetUserByuserID(userid interface{}) (*User, error) {
 	var user User
 	err := Model.DB.Where("id=?", userid).First(&user).Error
 	if err != nil {
 		return nil, err
 	}
 	return &user, nil
+}
+
+// 通过用户id查询用户名，场景：用户上传视频的时候用于生成视频的文件名
+func (u *UserInfoDao) GetUserNameByUserID(userid int64) (string, error) {
+	var username string
+	err := Model.DB.Select("username").Where("user_id=?", userid).First(&username).Error
+	if err != nil {
+		return "", err
+	}
+	return username, nil
 }

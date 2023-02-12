@@ -136,6 +136,7 @@ func (u *PostUserLogin) SetToken() error {
 	return nil
 }
 
+// 用户id生成
 func (u *PostUserLogin) UserIdGenarate() {
 	u.Userid = node.Generate().Int64()
 }

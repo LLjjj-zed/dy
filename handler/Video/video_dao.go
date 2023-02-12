@@ -21,9 +21,11 @@ type Video struct {
 	UserVideocode int64      `json:"videocode"`      //用户视频编号
 }
 
+// 视频表数据操作结构体
 type VideoDao struct {
 }
 
+// 视频表数据操作结构体构造函数
 func NewVideoDao() *VideoDao {
 	return &VideoDao{}
 }
@@ -32,6 +34,7 @@ func (v *VideoDao) QueryVideoby() {
 
 }
 
+// todo 未完成，等待粉丝和点赞系统完成
 func (v *VideoDao) PersistNewVideo(title string, userid int64, user *user.UserInfoDao) error {
 	userinfo, err := user.GetUserByuserID(userid)
 	if err != nil {
@@ -51,6 +54,7 @@ func (v *VideoDao) PersistNewVideo(title string, userid int64, user *user.UserIn
 	return Model.DB.Create(video).Error
 }
 
+// 获取用户视频序号吗，场景：用于用户将视频上传的时候生成视频文件名
 func (v *VideoDao) GetUserVideoCode(userid int64) (int64, error) {
 	var videocode int64
 	err := Model.DB.Select("videocode").Where("userid=?", userid).First(&videocode).Error

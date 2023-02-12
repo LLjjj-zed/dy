@@ -5,17 +5,21 @@ import (
 	"net/http"
 )
 
+// 用户信息回复结构体
 type UserResponse struct {
 	CommonResponse
 	User *User `json:"user"` // 用户信息
 }
 
+// 用户信息处理函数，用于处理http请求
 func UserInfoHandler(c *gin.Context) {
+	//从请求中获取用户id
 	id, exists := c.Get("user_id")
 	if !exists {
 		UserInfoErr(c, 3, "获取用户id失败")
 		return
 	}
+	//查询用户信息
 	userDao := NewUserInfoDao()
 	userinfo, err := userDao.GetUserByuserID(id)
 	if err != nil {

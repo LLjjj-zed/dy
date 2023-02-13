@@ -21,7 +21,7 @@ func UserPublishListHandler(c *gin.Context) {
 			UserPublishListErr(c, err.Error())
 			return
 		}
-		videoList, err := GetUserPublishList(c, userid)
+		videoList, err := GetUserPublishList(userid)
 		if err != nil {
 			UserPublishListErr(c, err.Error())
 			return
@@ -31,7 +31,7 @@ func UserPublishListHandler(c *gin.Context) {
 	UserPublishListErr(c, errors.New("userid获取失败，请重试").Error())
 }
 
-func GetUserPublishList(c *gin.Context, userid int64) (*VideoList, error) {
+func GetUserPublishList(userid int64) (*VideoList, error) {
 	dao := NewVideoDao()
 	list, err := dao.QueryUserPublishList(userid)
 	if err != nil {

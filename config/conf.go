@@ -16,12 +16,10 @@ type Mysql struct {
 	Loc       string
 }
 
-
 type Server struct {
 	IP   string
 	Port int
 }
-
 
 type Config struct {
 	DB     Mysql `toml:"mysql"`
@@ -30,6 +28,7 @@ type Config struct {
 
 var Info Config
 
+var MaxVideoList = 15
 
 // DBConnectString 填充得到数据库连接字符串
 func DBConnectString() string {

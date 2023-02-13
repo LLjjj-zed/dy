@@ -2,9 +2,11 @@ package Video
 
 import (
 	"douyin.core/Model"
+	"douyin.core/config"
 	user "douyin.core/handler/User"
 	"errors"
 	"gorm.io/gorm"
+	"time"
 )
 
 // Video
@@ -30,8 +32,26 @@ func NewVideoDao() *VideoDao {
 	return &VideoDao{}
 }
 
-func (v *VideoDao) QueryVideoby() {
+// todo   查询用户视频关系表排除用户看过的视频，嵌套结构体查询问题
+func (v *VideoDao) QueryVideoListLogin(userid int64, last_time time.Time) (*VideoList, error) {
+	var videolist VideoList
+	videolist.Videos = make([]*Video, 0, config.MaxVideoList)
+	err := Model.DB.Where("publish_time<?", last_time).Order("publish_time desc").Limit(config.MaxVideoList).Find(&videolist.Videos).Error
+	if err != nil {
+		return nil, err
+	}
+	return &videolist, nil
+}
 
+// todo 嵌套结构体查询问题
+func (v *VideoDao) QueryVideoListUnLogin(last_time time.Time) (*VideoList, error) {
+	var videolist VideoList
+	videolist.Videos = make([]*Video, 0, config.MaxVideoList)
+	err := Model.DB.Where("publish_time<?", last_time).Order("publish_time desc").Limit(config.MaxVideoList).Find(&videolist.Videos).Error
+	if err != nil {
+		return nil, err
+	}
+	return &videolist, nil
 }
 
 // todo 未完成，等待粉丝和点赞系统完成
@@ -66,4 +86,14 @@ func (v *VideoDao) GetUserVideoCode(userid int64) (int64, error) {
 		return -1, err
 	}
 	return videocode + 1, nil
+}
+
+// todo 嵌套结构体查询问题
+func (v *VideoDao) QueryUserPublishList(userid int64) (*VideoList, error) {
+	var videos []*Video
+	err := Model.DB.Where("userid=?", userid).Find(&videos).Error
+	if err != nil {
+		return nil, err
+	}
+	return &VideoList{Videos: videos}, nil
 }

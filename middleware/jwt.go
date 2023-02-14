@@ -25,7 +25,7 @@ type userStdClaims struct {
 	Userid int64
 }
 
-// 实现 `type Claims interface` 的 `Valid() error` 方法,自定义校验内容
+// Valid 实现 `type Claims interface` 的 `Valid() error` 方法,自定义校验内容
 func (c userStdClaims) Valid() (err error) {
 	//token过期校验
 	if c.VerifyExpiresAt(time.Now().Unix(), true) == false {
@@ -41,7 +41,7 @@ func (c userStdClaims) Valid() (err error) {
 	return
 }
 
-// token生成
+// JwtGenerateToken token生成
 func JwtGenerateToken(Userid int64, d time.Duration) (string, error) {
 	expireTime := time.Now().Add(d)
 	stdClaims := jwt.StandardClaims{

@@ -8,7 +8,7 @@ import (
 	"time"
 )
 
-// 视频流回复结构体
+// VideoFeedResponse 视频流回复结构体
 type VideoFeedResponse struct {
 	StatusCode int64  `json:"status_code"` // 状态码，0-成功，其他值-失败
 	StatusMsg  string `json:"status_msg"`  // 返回状态描述
@@ -16,7 +16,7 @@ type VideoFeedResponse struct {
 	VideoList  []*Video
 }
 
-// 视频流处理函数，用于处理http请求
+// VideoFeedHandler 视频流处理函数，用于处理http请求
 func VideoFeedHandler(c *gin.Context) {
 	incoming_time := c.Query("latest_time")
 	var last_time time.Time
@@ -39,7 +39,7 @@ func VideoFeedHandler(c *gin.Context) {
 	}
 }
 
-// 在用户未登录的状态下向用户推送视频的处理函数
+// UnLoginHandeler 在用户未登录的状态下向用户推送视频的处理函数
 func UnLoginHandeler(c *gin.Context, last_time time.Time) {
 	dao := NewVideoDao()
 	videolist, err := dao.QueryVideoListUnLogin(last_time)
@@ -50,7 +50,7 @@ func UnLoginHandeler(c *gin.Context, last_time time.Time) {
 	VideoFeedOK(c, videolist.Videos, last_time.Unix())
 }
 
-// 在用户已登录的状态下向用户推送视频的处理函数
+// LoginHandler 在用户已登录的状态下向用户推送视频的处理函数
 func LoginHandler(c *gin.Context, token string, last_time time.Time) {
 	claims, err := middleware.JwtParseUser(token)
 	if err != nil {
@@ -66,13 +66,13 @@ func LoginHandler(c *gin.Context, token string, last_time time.Time) {
 	VideoFeedOK(c, videoList.Videos, last_time.Unix())
 }
 
-// 获取视频列表用于返回feed
+// GetVideoList 获取视频列表用于返回feed
 func GetVideoList(c *gin.Context) *VideoList {
 	var videos VideoList
 	return &videos
 }
 
-// 返回正确信息
+// VideoFeedOK 返回正确信息
 func VideoFeedOK(c *gin.Context, videos []*Video, next_time int64) {
 	c.JSON(http.StatusOK, VideoFeedResponse{
 		StatusCode: 0,
@@ -82,7 +82,7 @@ func VideoFeedOK(c *gin.Context, videos []*Video, next_time int64) {
 	})
 }
 
-// 返回错误信息
+// VideoFeedErr 返回错误信息
 func VideoFeedErr(c *gin.Context, ErrMasseage string) {
 	c.JSON(http.StatusOK, VideoFeedResponse{
 		StatusCode: 1,

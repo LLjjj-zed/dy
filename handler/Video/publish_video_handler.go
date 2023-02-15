@@ -10,13 +10,13 @@ import (
 	"strings"
 )
 
-// 用户投稿回复结构体
+// PublishVideoResponse 用户投稿回复结构体
 type PublishVideoResponse struct {
 	StatusCode int64  `json:"status_code"` // 状态码，0-成功，其他值-失败
 	StatusMsg  string `json:"status_msg"`  // 返回状态描述
 }
 
-// 用户投稿处理函数，用于处理http请求
+// PublishVedioHandler 用户投稿处理函数，用于处理http请求
 func PublishVedioHandler(c *gin.Context) {
 	//从请求中获取视频标题和token
 	title := c.PostForm("title")
@@ -80,14 +80,14 @@ func PublishVedioHandler(c *gin.Context) {
 	PublishVideoOk(c)
 }
 
-// 返回正确信息
+// PublishVideoOk 返回正确信息
 func PublishVideoOk(c *gin.Context) {
 	c.JSON(http.StatusOK, &PublishVideoResponse{
 		StatusCode: 0,
 	})
 }
 
-// 返回错误信息
+// PublishvideoErr 返回错误信息
 func PublishvideoErr(c *gin.Context, errmeassage string) {
 	c.JSON(http.StatusOK, &PublishVideoResponse{
 		StatusCode: 1,

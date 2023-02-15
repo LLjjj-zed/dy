@@ -5,18 +5,19 @@ import (
 	"net/http"
 )
 
-// 用户登录回复结构体
+// UserLoginResponse 用户登录回复结构体
 type UserLoginResponse struct {
 	CommonResponse
 	Token  string `json:"token"`   // 用户鉴权token
 	UserID int64  `json:"user_id"` // 用户id
 }
 
-// 用户登录回复结构体构造函数
+// NewUserLoginResponse 用户登录回复结构体构造函数
 func NewUserLoginResponse() *UserLoginResponse {
 	return &UserLoginResponse{}
 }
 
+// UserLoginHandler 用户登录处理函数
 func UserLoginHandler(c *gin.Context) {
 	//获取用户名和密码
 	username := c.Query("username")
@@ -50,7 +51,7 @@ func UserLoginHandler(c *gin.Context) {
 	LoginOK(c, loginresponse)
 }
 
-// 返回正确信息
+// LoginOK 返回正确信息
 func LoginOK(c *gin.Context, login *UserLoginResponse) {
 	c.JSON(http.StatusOK, UserLoginResponse{
 		CommonResponse: CommonResponse{
@@ -61,7 +62,7 @@ func LoginOK(c *gin.Context, login *UserLoginResponse) {
 	})
 }
 
-// 返回错误信息
+// LoginErr 返回错误信息
 func LoginErr(c *gin.Context, errmessage string) {
 	c.JSON(http.StatusOK, UserLoginResponse{
 		CommonResponse: CommonResponse{

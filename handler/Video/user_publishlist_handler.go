@@ -7,12 +7,14 @@ import (
 	"strconv"
 )
 
+// UserPublishListResponse 发布列表回复结构体
 type UserPublishListResponse struct {
 	StatusCode int64  `json:"status_code"` // 状态码，0-成功，其他值-失败
 	StatusMsg  string `json:"status_msg"`  // 返回状态描述
 	VideoList  []*Video
 }
 
+// UserPublishListHandler 发布列表处理函数
 func UserPublishListHandler(c *gin.Context) {
 	useridstr, exist := c.GetQuery("user_id")
 	if exist {
@@ -31,6 +33,7 @@ func UserPublishListHandler(c *gin.Context) {
 	UserPublishListErr(c, errors.New("userid获取失败，请重试").Error())
 }
 
+// GetUserPublishList 获取发布列表
 func GetUserPublishList(userid int64) (*VideoList, error) {
 	dao := NewVideoDao()
 	list, err := dao.QueryUserPublishList(userid)
@@ -40,6 +43,7 @@ func GetUserPublishList(userid int64) (*VideoList, error) {
 	return list, nil
 }
 
+// UserPublishListOK 返回正确信息
 func UserPublishListOK(c *gin.Context, list *VideoList) {
 	c.JSON(http.StatusOK, &UserPublishListResponse{
 		StatusCode: 0,
@@ -48,6 +52,7 @@ func UserPublishListOK(c *gin.Context, list *VideoList) {
 	})
 }
 
+// UserPublishListErr 返回错误信息
 func UserPublishListErr(c *gin.Context, errmessage string) {
 	c.JSON(http.StatusOK, &UserPublishListResponse{
 		StatusCode: 1,

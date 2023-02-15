@@ -9,7 +9,6 @@ import (
 	"time"
 )
 
-// Video
 type Video struct {
 	Author        *user.User `json:"author"`         // 视频作者信息
 	UserID        int64      `json:"user_id"`        //用户id
@@ -23,11 +22,11 @@ type Video struct {
 	UserVideocode int64      `json:"videocode"`      //用户视频编号
 }
 
-// 视频表数据操作结构体
+// VideoDao 视频表数据操作结构体
 type VideoDao struct {
 }
 
-// 视频表数据操作结构体构造函数
+// NewVideoDao 视频表数据操作结构体构造函数
 func NewVideoDao() *VideoDao {
 	return &VideoDao{}
 }
@@ -74,7 +73,7 @@ func (v *VideoDao) PersistNewVideo(title string, userid int64, user *user.UserIn
 	return Model.DB.Create(video).Error
 }
 
-// 获取用户视频序号吗，场景：用于用户将视频上传的时候生成视频文件名
+// GetUserVideoCode 获取用户视频序号吗，场景：用于用户将视频上传的时候生成视频文件名
 func (v *VideoDao) GetUserVideoCode(userid int64) (int64, error) {
 	var videocode int64
 	err := Model.DB.Select("videocode").Where("userid=?", userid).First(&videocode).Error

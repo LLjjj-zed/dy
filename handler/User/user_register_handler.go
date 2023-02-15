@@ -19,7 +19,7 @@ const (
 // id生成器全局节点
 var node *snowflake.Node
 
-// id生成器初始化函数，雪花算法
+// Init id生成器初始化函数，雪花算法
 func Init(startTime string, machineID int64) (err error) {
 	var st time.Time
 	st, err = time.Parse("2023-02-02", startTime)
@@ -32,13 +32,14 @@ func Init(startTime string, machineID int64) (err error) {
 	return
 }
 
+// UserRegisterReponse 用户注册回复结构体
 type UserRegisterReponse struct {
 	CommonResponse
 	Token  string `json:"token"`   // 用户鉴权token
 	UserID int64  `json:"user_id"` // 用户id
 }
 
-// 用户登录校验
+// PostUserLogin 用户登录校验
 type PostUserLogin struct {
 	Username string
 	Password string
@@ -46,6 +47,7 @@ type PostUserLogin struct {
 	Token    string
 }
 
+// UserRegistHandler 用户注册处理函数
 func UserRegistHandler(c *gin.Context) {
 	//获取用户名和密码
 	username := c.Query("username")
@@ -68,7 +70,7 @@ func UserRegistHandler(c *gin.Context) {
 	RegisterOK(c, newPostUserLogin)
 }
 
-// 注册新用户
+// Regist 注册新用户
 func (u *PostUserLogin) Regist() error {
 	//校验参数
 	err := u.CheckPost()
@@ -94,12 +96,12 @@ func (u *PostUserLogin) Regist() error {
 	return nil
 }
 
-// 创建对象，用于注册
+// NewPostUserLogin 创建对象，用于注册
 func NewPostUserLogin(username, password string) *PostUserLogin {
 	return &PostUserLogin{Username: username, Password: password}
 }
 
-// 将用户数据持久化到数据库并检查是否出现用户名重复的现象
+// PersistData 将用户数据持久化到数据库并检查是否出现用户名重复的现象
 func (u *PostUserLogin) PersistData() error {
 	//创建用户表数据操作对象
 	userDAO := NewUserInfoDao()
@@ -126,7 +128,7 @@ func (u *PostUserLogin) PersistData() error {
 	}
 }
 
-// 获取token
+// SetToken 获取token
 func (u *PostUserLogin) SetToken() error {
 	token, err := middleware.JwtGenerateToken(u.Userid, time.Hour)
 	if err != nil {
@@ -136,12 +138,12 @@ func (u *PostUserLogin) SetToken() error {
 	return nil
 }
 
-// 用户id生成
+// UserIdGenarate 用户id生成
 func (u *PostUserLogin) UserIdGenarate() {
 	u.Userid = node.Generate().Int64()
 }
 
-// 检查用户登录时的用户名和密码是否合法
+// CheckPost 检查用户登录时的用户名和密码是否合法
 func (u *PostUserLogin) CheckPost() error {
 	if u.Username == "" {
 		return errors.New("用户名不能为空")
@@ -159,7 +161,7 @@ func (u *PostUserLogin) CheckPost() error {
 	return nil
 }
 
-// 返回正确信息
+// RegisterOK 返回正确信息
 func RegisterOK(c *gin.Context, login *PostUserLogin) {
 	c.JSON(http.StatusOK, UserRegisterReponse{
 		CommonResponse: CommonResponse{
@@ -170,7 +172,7 @@ func RegisterOK(c *gin.Context, login *PostUserLogin) {
 	})
 }
 
-// 返回错误信息
+// RegisterErr 返回错误信息
 func RegisterErr(c *gin.Context, errmessage string) {
 	c.JSON(http.StatusOK, UserRegisterReponse{
 		CommonResponse: CommonResponse{

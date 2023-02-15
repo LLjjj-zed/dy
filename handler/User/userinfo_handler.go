@@ -5,13 +5,13 @@ import (
 	"net/http"
 )
 
-// 用户信息回复结构体
+// UserResponse 用户信息回复结构体
 type UserResponse struct {
 	CommonResponse
 	User *User `json:"user"` // 用户信息
 }
 
-// 用户信息处理函数，用于处理http请求
+// UserInfoHandler 用户信息处理函数，用于处理http请求
 func UserInfoHandler(c *gin.Context) {
 	//从请求中获取用户id
 	id, exists := c.Get("user_id")
@@ -29,7 +29,7 @@ func UserInfoHandler(c *gin.Context) {
 	UserInfoOK(c, userinfo)
 }
 
-// 返回正确信息
+// UserInfoOK 返回正确信息
 func UserInfoOK(c *gin.Context, login *User) {
 	c.JSON(http.StatusOK, UserResponse{
 		CommonResponse: CommonResponse{
@@ -45,7 +45,7 @@ func UserInfoOK(c *gin.Context, login *User) {
 	})
 }
 
-// 返回错误信息
+// UserInfoErr 返回错误信息
 func UserInfoErr(c *gin.Context, code int64, errmessage string) {
 	c.JSON(http.StatusOK, UserResponse{
 		CommonResponse: CommonResponse{

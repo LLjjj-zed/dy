@@ -1,10 +1,14 @@
 package middleware
 
-import "testing"
+import (
+	"github.com/gin-gonic/gin"
+	"testing"
+)
 
 func TestInitminio(t *testing.T) {
-	client, ctx := Initminio()
+	var ctx *gin.Context
+	client := Initminio()
 	videoname := "douyinbear.mp4"
 	videopath := "../public/douyinbear.mp4"
-	UploadFileToMinio(client, videoname, videopath, ctx)
+	UploadVideoToMinio(ctx, client, videoname, videopath, "video")
 }

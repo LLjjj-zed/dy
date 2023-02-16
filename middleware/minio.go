@@ -1,22 +1,19 @@
 package middleware
 
 import (
-	"context"
+	"github.com/gin-gonic/gin"
 	"github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/credentials"
 	"log"
 )
 
-var bucketName = "douyin"
-
-func Initminio() (*minio.Client, context.Context) {
-	endpoint := "http://23.94.57.209:9001"
-	accessKeyID := "IlOzGpW6BAYRuKGO"
-	secretAccessKey := "IzLLsT2WsN8xY8SymTtLu6pzMJDwNxpI"
-	useSSL := true
+func Initminio() *minio.Client {
+	endpoint := "23.94.57.209:9000"
+	accessKeyID := "douyin"
+	secretAccessKey := "88888888"
+	useSSL := false
 
 	// Initialize minio client object.
-	ctx := context.Background()
 	minioClient, err := minio.New(endpoint, &minio.Options{
 		Creds:  credentials.NewStaticV4(accessKeyID, secretAccessKey, ""),
 		Secure: useSSL,
@@ -26,24 +23,25 @@ func Initminio() (*minio.Client, context.Context) {
 	}
 
 	log.Printf("%#v\n", minioClient) // minioClient is now set up
-	policy := "{\"Version\": \"2012-10-17\",\"Statement\": [{\"Effect\": \"Allow\",\"Action\": [\"s3:GetBucketLocation\"],\"Resource\": [\"arn:aws:s3:::starcity\"]},{\"Effect\": \"Allow\",\"Action\": [\"s3:ListBucket\"],\"Resource\": [\"arn:aws:s3:::starcity\"],\"Condition\": {\"StringEquals\": {\"s3:prefix\": [\"bear\",\"prefix/\"]}}},{\"Effect\": \"Allow\",\"Action\": [\"s3:GetObject\"],\"Resource\": [\"arn:aws:s3:::starcity/bear*\",\"arn:aws:s3:::starcity/prefix/*\"]}]}"
-	minioClient.SetBucketPolicy(ctx, "douyin", policy)
-
-	return minioClient, ctx
+	return minioClient
 }
 
-func UploadFileToMinio(minioClient *minio.Client, videoname, videopath string, ctx context.Context) {
-	// Upload the mp4 file
-
-	objectName := videoname
-	filePath := videopath
-	contentType := "video/mp4"
-
+func UploadVideoToMinio(ctx *gin.Context, minioClient *minio.Client, videoname, videopath, bucketName string) error {
 	// Upload the mp4 file with FPutObject
-	info, err := minioClient.FPutObject(ctx, bucketName, objectName, filePath, minio.PutObjectOptions{ContentType: contentType})
+	info, err := minioClient.FPutObject(ctx, bucketName, videoname, videopath, minio.PutObjectOptions{ContentType: "video/mp4"})
 	if err != nil {
-		log.Fatalln(err)
+		return err
 	}
+	log.Printf("Successfully uploaded %s of size %d\n", videoname, info.Size)
+	return nil
+}
 
-	log.Printf("Successfully uploaded %s of size %d\n", objectName, info.Size)
+func UploadImageoMinio(minioClient *minio.Client, imagename, imagepath, bucketName string, ctx *gin.Context) error {
+	// Upload the png file with FPutObject
+	info, err := minioClient.FPutObject(ctx, bucketName, imagename, imagepath, minio.PutObjectOptions{ContentType: "image/png"})
+	if err != nil {
+		return err
+	}
+	log.Printf("Successfully uploaded %s of size %d\n", imagename, info.Size)
+	return nil
 }

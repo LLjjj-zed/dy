@@ -3,7 +3,6 @@ package User
 import (
 	"douyin.core/middleware"
 	"errors"
-	"github.com/bwmarrin/snowflake"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 	"net/http"
@@ -16,24 +15,8 @@ const (
 	MinPasswordLength = 5
 )
 
-// id生成器全局节点
-var node *snowflake.Node
-
-// Init id生成器初始化函数，雪花算法
-func Init(startTime string, machineID int64) (err error) {
-	var st time.Time
-	st, err = time.Parse("2023-02-02", startTime)
-	if err != nil {
-		return
-	}
-	// 设置时间
-	snowflake.Epoch = st.UnixNano() / 1000000
-	node, err = snowflake.NewNode(machineID)
-	return
-}
-
-// UserRegisterReponse 用户注册回复结构体
-type UserRegisterReponse struct {
+// RegisterReponse 用户注册回复结构体
+type RegisterReponse struct {
 	CommonResponse
 	Token  string `json:"token"`   // 用户鉴权token
 	UserID int64  `json:"user_id"` // 用户id
@@ -140,7 +123,9 @@ func (u *PostUserLogin) SetToken() error {
 
 // UserIdGenarate 用户id生成
 func (u *PostUserLogin) UserIdGenarate() {
-	u.Userid = node.Generate().Int64()
+	worker, _ := middleware.NewWorker(1)
+	id := worker.GetId()
+	u.Userid = id
 }
 
 // CheckPost 检查用户登录时的用户名和密码是否合法
@@ -163,7 +148,7 @@ func (u *PostUserLogin) CheckPost() error {
 
 // RegisterOK 返回正确信息
 func RegisterOK(c *gin.Context, login *PostUserLogin) {
-	c.JSON(http.StatusOK, UserRegisterReponse{
+	c.JSON(http.StatusOK, RegisterReponse{
 		CommonResponse: CommonResponse{
 			StatusCode: 0,
 		},
@@ -174,7 +159,7 @@ func RegisterOK(c *gin.Context, login *PostUserLogin) {
 
 // RegisterErr 返回错误信息
 func RegisterErr(c *gin.Context, errmessage string) {
-	c.JSON(http.StatusOK, UserRegisterReponse{
+	c.JSON(http.StatusOK, RegisterReponse{
 		CommonResponse: CommonResponse{
 			StatusCode: 1,
 			StatusMsg:  errmessage,

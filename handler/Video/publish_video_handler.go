@@ -17,6 +17,7 @@ var (
 	NewminioClient sync.Once
 )
 
+// GetminioClient 连接minio客户端
 func GetminioClient() {
 	NewminioClient.Do(func() {
 		minioClient = middleware.Initminio()
@@ -74,7 +75,7 @@ func PublishVedioHandler(c *gin.Context) {
 	}
 	//将视频持久化到本地，使用strings.Builder替换+提高性能
 	videoname := GetFilename(name, code, ext)
-	path := filepath.Join("./puclic", videoname)
+	path := filepath.Join("./public", videoname)
 	err = c.SaveUploadedFile(file, path)
 	if err != nil {
 		PublishVideoErr(c, err.Error())
@@ -102,6 +103,7 @@ func PublishVedioHandler(c *gin.Context) {
 	PublishVideoOk(c)
 }
 
+// GetFilename 获取文件名，根据用户名，用户视频序号
 func GetFilename(name, code, ext string) string {
 	var build strings.Builder
 	build.WriteString(name)
@@ -119,7 +121,7 @@ func PublishVideoOk(c *gin.Context) {
 	})
 }
 
-// PublishvideoErr 返回错误信息
+// PublishVideoErr  返回错误信息
 func PublishVideoErr(c *gin.Context, errmeassage string) {
 	c.JSON(http.StatusOK, &PublishVideoResponse{
 		StatusCode: 1,

@@ -97,3 +97,9 @@ func (v *VideoDao) QueryUserPublishList(userid int64) (*VideoList, error) {
 	}
 	return &VideoList{Videos: videos}, nil
 }
+
+func QueryVideoById(vid int64) (Video, error) {
+	var video Video
+	err := Model.DB.Where("videoid = ?", vid).First(&video).Error
+	return video, err
+}

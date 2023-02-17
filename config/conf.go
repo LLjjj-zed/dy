@@ -29,6 +29,7 @@ type Config struct {
 var Info Config
 
 var MaxVideoList = 15
+var MaxLikeList = 15
 
 // DBConnectString 填充得到数据库连接字符串
 func DBConnectString() string {

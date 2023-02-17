@@ -43,7 +43,7 @@ func UserRegistHandler(c *gin.Context) {
 	//创建新对象
 	newPostUserLogin := NewPostUserLogin(username, password)
 	//注册新用户
-	err := newPostUserLogin.Regist()
+	err := newPostUserLogin.Register()
 	if err != nil {
 		//返回错误信息
 		RegisterErr(c, err.Error())
@@ -53,8 +53,8 @@ func UserRegistHandler(c *gin.Context) {
 	RegisterOK(c, newPostUserLogin)
 }
 
-// Regist 注册新用户
-func (u *PostUserLogin) Regist() error {
+// Register 注册新用户
+func (u *PostUserLogin) Register() error {
 	//校验参数
 	err := u.CheckPost()
 	if err != nil {
@@ -99,6 +99,13 @@ func (u *PostUserLogin) PersistData() error {
 		if err != nil {
 			return err
 		}
+		//对用户密码进行AES-256加密，保障用户安全
+		passwordstr := []byte(u.Password)
+		aes, err := middleware.EnPwdCode(passwordstr)
+		if err != nil {
+			return err
+		}
+		u.Password = aes
 		//将数据持久化到用户注册表
 		err = userRigestDao.RegistUsertoDb(u.Userid, u.Username, u.Password)
 		if err != nil {

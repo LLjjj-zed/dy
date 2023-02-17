@@ -75,7 +75,7 @@ func PublishVedioHandler(c *gin.Context) {
 	}
 	//将视频持久化到本地，使用strings.Builder替换+提高性能
 	videoname := GetFilename(name, code, ext)
-	path := filepath.Join("./public", videoname)
+	path := filepath.Join("./public/", videoname)
 	err = c.SaveUploadedFile(file, path)
 	if err != nil {
 		PublishVideoErr(c, err.Error())

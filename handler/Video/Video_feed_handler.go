@@ -2,6 +2,7 @@ package Video
 
 import (
 	"douyin.core/middleware"
+	"errors"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"strconv"
@@ -45,6 +46,11 @@ func UnLoginHandler(c *gin.Context, lastTime time.Time) {
 	videolist, err := dao.QueryVideoListUnLogin(lastTime)
 	if err != nil {
 		FeedErr(c, err.Error())
+		return
+	}
+	//判断视频列表长度，防止panic
+	if len(videolist.Videos) <= 0 {
+		FeedErr(c, errors.New("当前无最新视频").Error())
 		return
 	}
 	FeedOK(c, videolist.Videos, lastTime.Unix())

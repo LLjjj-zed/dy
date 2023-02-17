@@ -2,6 +2,7 @@ package User
 
 import (
 	"douyin.core/Model"
+	"douyin.core/middleware"
 	"errors"
 )
 
@@ -43,7 +44,13 @@ func (u UserRigestDao) QueryUserLogin(username, password string, login *UserLogi
 	if err != nil {
 		return err
 	}
-	if login.Password != password {
+	//对查询得到的用户密码进行解密
+	bytes, err := middleware.DePwdCode(login.Password)
+	if err != nil {
+		return err
+	}
+	//判断密码是否正确
+	if string(bytes) != password {
 		err = errors.New("密码错误")
 		return err
 	}

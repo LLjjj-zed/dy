@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"github.com/gin-gonic/gin"
 	"sync"
 	"time"
 )
@@ -38,4 +39,9 @@ func (l *TokenBucket) Set(r, c int64) {
 	l.capacity = c
 	l.tokens = 0
 	l.lastTokenSec = time.Now().Unix()
+}
+
+func GetIp(c *gin.Context) string {
+	ip := c.ClientIP()
+	return ip
 }

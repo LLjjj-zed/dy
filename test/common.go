@@ -6,7 +6,7 @@ import (
 	"testing"
 )
 
-var serverAddr = "http://192.168.1.35:8080"
+var serverAddr = "http://192.168.45.174:8080"
 var testUserA = "douyinTestUserA"
 var testUserB = "douyinTestUserB"
 

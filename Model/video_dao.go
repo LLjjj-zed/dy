@@ -1,9 +1,7 @@
-package Video
+package Model
 
 import (
-	"douyin.core/Model"
 	"douyin.core/config"
-	user "douyin.core/handler/User"
 	"errors"
 	"gorm.io/gorm"
 	"strings"
@@ -11,16 +9,16 @@ import (
 )
 
 type Video struct {
-	Author        *user.User `json:"author"`         // 视频作者信息
-	UserID        int64      `json:"user_id"`        //用户id
-	CommentCount  int64      `json:"comment_count"`  // 视频的评论总数
-	CoverURL      string     `json:"cover_url"`      // 视频封面地址
-	FavoriteCount int64      `json:"favorite_count"` // 视频的点赞总数
-	ID            int64      `json:"id"`             // 视频唯一标识
-	IsFavorite    bool       `json:"is_favorite"`    // true-已点赞，false-未点赞
-	PlayURL       string     `json:"play_url"`       // 视频播放地址
-	Title         string     `json:"title"`          // 视频标题
-	UserVideocode int64      `json:"videocode"`      //用户视频编号
+	Author        *User  `json:"author"`         // 视频作者信息
+	UserID        int64  `json:"user_id"`        //用户id
+	CommentCount  int64  `json:"comment_count"`  // 视频的评论总数
+	CoverURL      string `json:"cover_url"`      // 视频封面地址
+	FavoriteCount int64  `json:"favorite_count"` // 视频的点赞总数
+	ID            int64  `json:"id"`             // 视频唯一标识
+	IsFavorite    bool   `json:"is_favorite"`    // true-已点赞，false-未点赞
+	PlayURL       string `json:"play_url"`       // 视频播放地址
+	Title         string `json:"title"`          // 视频标题
+	UserVideocode int64  `json:"videocode"`      //用户视频编号
 }
 
 // VideoDao 视频表数据操作结构体
@@ -36,7 +34,7 @@ func NewVideoDao() *VideoDao {
 func (v *VideoDao) QueryVideoListLogin(userid int64, last_time time.Time) (*VideoList, error) {
 	var videolist VideoList
 	videolist.Videos = make([]*Video, 0, config.MaxVideoList)
-	err := Model.DB.Where("publish_time<? AND user_id=?", last_time, userid).Order("publish_time desc").Limit(config.MaxVideoList).Find(&videolist.Videos).Error
+	err := DB.Where("publish_time<? AND user_id=?", last_time, userid).Order("publish_time desc").Limit(config.MaxVideoList).Find(&videolist.Videos).Error
 	if err != nil {
 		return nil, err
 	}
@@ -47,7 +45,7 @@ func (v *VideoDao) QueryVideoListLogin(userid int64, last_time time.Time) (*Vide
 func (v *VideoDao) QueryVideoListUnLogin(last_time time.Time) (*VideoList, error) {
 	var videolist VideoList
 	videolist.Videos = make([]*Video, 0, config.MaxVideoList)
-	err := Model.DB.Where("publish_time<?", last_time).Order("publish_time desc").Limit(config.MaxVideoList).Find(&videolist.Videos).Error
+	err := DB.Where("publish_time<?", last_time).Order("publish_time desc").Limit(config.MaxVideoList).Find(&videolist.Videos).Error
 	if err != nil {
 		return nil, err
 	}
@@ -55,7 +53,7 @@ func (v *VideoDao) QueryVideoListUnLogin(last_time time.Time) (*VideoList, error
 }
 
 // PersistNewVideo 将视频数据持久化到数据库
-func (v *VideoDao) PersistNewVideo(title string, userid int64, code int64, videoname, imagename string, user *user.UserInfoDao) error {
+func (v *VideoDao) PersistNewVideo(title string, userid int64, code int64, videoname, imagename string, user *UserInfoDao) error {
 	userinfo, err := user.GetUserByuserID(userid)
 	if err != nil {
 		return err
@@ -72,7 +70,7 @@ func (v *VideoDao) PersistNewVideo(title string, userid int64, code int64, video
 		Title:         title,
 		UserVideocode: code,
 	}
-	return Model.DB.Create(video).Error
+	return DB.Create(video).Error
 }
 
 // GetUrl 获取url
@@ -87,7 +85,7 @@ func GetUrl(name string) string {
 // GetUserVideoCode 获取用户视频序号吗，场景：用于用户将视频上传的时候生成视频文件名
 func (v *VideoDao) GetUserVideoCode(userid int64) (int64, error) {
 	var videocode int64
-	err := Model.DB.Select("videocode").Where("userid=?", userid).First(&videocode).Error
+	err := DB.Select("videocode").Where("userid=?", userid).First(&videocode).Error
 	is := errors.Is(err, gorm.ErrRecordNotFound)
 	if is {
 		return 0, err
@@ -101,7 +99,7 @@ func (v *VideoDao) GetUserVideoCode(userid int64) (int64, error) {
 // QueryUserPublishList 查询用户发布列表
 func (v *VideoDao) QueryUserPublishList(userid int64) (*VideoList, error) {
 	var videos []*Video
-	err := Model.DB.Where("userid=?", userid).Find(&videos).Error
+	err := DB.Where("userid=?", userid).Find(&videos).Error
 	if err != nil {
 		return nil, err
 	}
@@ -110,6 +108,6 @@ func (v *VideoDao) QueryUserPublishList(userid int64) (*VideoList, error) {
 
 func QueryVideoById(vid int64) (Video, error) {
 	var video Video
-	err := Model.DB.Where("videoid = ?", vid).First(&video).Error
+	err := DB.Where("videoid = ?", vid).First(&video).Error
 	return video, err
 }

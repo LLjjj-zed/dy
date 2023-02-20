@@ -1,7 +1,7 @@
 package Video
 
 import (
-	user "douyin.core/handler/User"
+	"douyin.core/Model"
 	"douyin.core/middleware"
 	"github.com/gin-gonic/gin"
 	"github.com/minio/minio-go/v7"
@@ -63,7 +63,7 @@ func PublishVedioHandler(c *gin.Context) {
 		PublishVideoErr(c, "上传视频格式错误，请重试")
 		return
 	}
-	videoDao := NewVideoDao()
+	videoDao := Model.NewVideoDao()
 	//获取用户视频序号，用于生成视频文件名
 	codeint, err := videoDao.GetUserVideoCode(userid)
 	if err != nil {
@@ -72,7 +72,7 @@ func PublishVedioHandler(c *gin.Context) {
 	}
 	//将用户视频序号转换成字符串
 	code := strconv.Itoa(int(codeint))
-	var userinfo user.UserInfoDao
+	var userinfo Model.UserInfoDao
 	//获取用户名，用于生成视频文件名
 	username, err := userinfo.GetUserNameByUserID(userid)
 	name := username

@@ -1,6 +1,7 @@
 package Video
 
 import (
+	"douyin.core/Model"
 	"douyin.core/middleware"
 	"errors"
 	"github.com/gin-gonic/gin"
@@ -14,7 +15,7 @@ type FeedResponse struct {
 	StatusCode int64  `json:"status_code"` // 状态码，0-成功，其他值-失败
 	StatusMsg  string `json:"status_msg"`  // 返回状态描述
 	NextTime   int64
-	VideoList  []*Video
+	VideoList  []*Model.Video
 }
 
 // VideoFeedHandler 视频流处理函数，用于处理http请求
@@ -42,7 +43,7 @@ func VideoFeedHandler(c *gin.Context) {
 
 // UnLoginHandler 在用户未登录的状态下向用户推送视频的处理函数
 func UnLoginHandler(c *gin.Context, lastTime time.Time) {
-	dao := NewVideoDao()
+	dao := Model.NewVideoDao()
 	videolist, err := dao.QueryVideoListUnLogin(lastTime)
 	if err != nil {
 		FeedErr(c, err.Error())
@@ -64,7 +65,7 @@ func LoginHandler(c *gin.Context, token string, lastTime time.Time) {
 		return
 	}
 	userId := claims.Userid
-	dao := NewVideoDao()
+	dao := Model.NewVideoDao()
 	videoList, err := dao.QueryVideoListLogin(userId, lastTime)
 	if err != nil {
 		FeedErr(c, err.Error())
@@ -73,7 +74,7 @@ func LoginHandler(c *gin.Context, token string, lastTime time.Time) {
 }
 
 // FeedOK 返回正确信息
-func FeedOK(c *gin.Context, videos []*Video, nextTime int64) {
+func FeedOK(c *gin.Context, videos []*Model.Video, nextTime int64) {
 	c.JSON(http.StatusOK, FeedResponse{
 		StatusCode: 0,
 		StatusMsg:  "success",

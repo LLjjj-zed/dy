@@ -1,7 +1,7 @@
 package Like
 
 import (
-	"douyin.core/handler/Video"
+	"douyin.core/Model"
 	"douyin.core/middleware"
 	"github.com/gin-gonic/gin"
 	"strconv"
@@ -24,7 +24,7 @@ func GetLikeList(c *gin.Context) {
 		LikeListResponse(c, 1, "未能成功获取用户id，请重试", nil)
 		return
 	}
-	dao := LikeDAO{}
+	dao := Model.LikeDAO{}
 	likeList, err := dao.QueryLikeList(userid)
 	if err != nil {
 		LikeListResponse(c, 1, "获取点赞列表失败", nil)
@@ -33,7 +33,7 @@ func GetLikeList(c *gin.Context) {
 	LikeListResponse(c, 0, "获取点赞列表成功", likeList)
 }
 
-func LikeListResponse(c *gin.Context, statuscode int64, statusmsg string, likeList []Video.Video) {
+func LikeListResponse(c *gin.Context, statuscode int64, statusmsg string, likeList []Model.Video) {
 	c.JSON(200, gin.H{
 		"status_code": statuscode,
 		"status_msg":  statusmsg,

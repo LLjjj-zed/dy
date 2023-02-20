@@ -1,16 +1,16 @@
 package Comment
 
 import (
-	user "douyin.core/handler/User"
+	user "douyin.core/Model"
 	"douyin.core/middleware"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
 
 type PublishCommentResponse struct {
-	StatusCode int64    `json:"status_code"`
-	StatusMsg  string   `json:"status_msg"`
-	Comment    *Comment `json:"comment"`
+	StatusCode int64         `json:"status_code"`
+	StatusMsg  string        `json:"status_msg"`
+	Comment    *user.Comment `json:"comment"`
 }
 
 func CommentActionHandler(c *gin.Context) {
@@ -26,7 +26,7 @@ func CommentActionHandler(c *gin.Context) {
 	}
 	userid := userclaim.Userid
 	actionType := c.PostForm("action_type")
-	cmtDao := NewCommentDao()
+	cmtDao := user.NewCommentDao()
 	var userinfo user.UserInfoDao
 
 	if actionType == "1" {
@@ -65,7 +65,7 @@ func CommentBadResponse(c *gin.Context, errmsg string) {
 	})
 }
 
-func CommentSuccessResponse(c *gin.Context, comment *Comment) {
+func CommentSuccessResponse(c *gin.Context, comment *user.Comment) {
 	c.JSON(http.StatusOK, PublishCommentResponse{
 		StatusCode: 0,
 		StatusMsg:  "OK",

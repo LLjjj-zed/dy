@@ -51,31 +51,23 @@ func UnFollow(userid, id int64) error {
 	var key = string(rune(userid))
 	var val = string(rune(id))
 	pipe := conn.Pipeline()
-	if exi, err := conn.SIsMember(ctx, Interact.FollowSetkey(key), val).Result(); exi == true {
-		if err != nil {
-			return err
-		}
+	if exi, _ := conn.SIsMember(ctx, Interact.FollowSetkey(key), val).Result(); exi == true {
 		_, adderr := pipe.SRem(ctx, Interact.FollowSetkey(key), val).Result() //val==1，关注操作，前者的关注集合添加后者，后者的粉丝集合添加前者
 		_, adderr = pipe.SRem(ctx, Interact.FollowerSetkey(val), key).Result()
 		if adderr != nil {
 			return adderr
 		}
-	} else {
-		return nil
-	}
-	//前者的关注数以及后者的粉丝数减1
-	if follow := pipe.Decr(ctx, Interact.FollowCountkey(userid)); follow.Err() != nil {
-		return follow.Err()
-	} else {
-		if followed := pipe.Decr(ctx, Interact.FollowerCountkey(id)); followed.Err() != nil {
+		//前者的关注数以及后者的粉丝数减1
+		if follow := pipe.Decr(ctx, Interact.FollowCountkey(userid)); follow.Err() != nil {
 			return follow.Err()
+		} else {
+			if followed := pipe.Decr(ctx, Interact.FollowerCountkey(id)); followed.Err() != nil {
+				return follow.Err()
+			}
 		}
-	}
-	_, err := pipe.Exec(ctx)
-	if err != nil { // 报错后进行一次额外尝试
-		_, err = pipe.Exec(ctx)
-		if err != nil {
-			return nil
+		_, err := pipe.Exec(ctx)
+		if err != nil { // 报错后进行一次额外尝试
+			pipe.Exec(ctx)
 		}
 	}
 	return nil

@@ -21,7 +21,7 @@ func InitRedis() {
 	Redisclient = redis.NewClient(&redis.Options{
 		Addr:     addr,
 		Password: password,
-		DB:       0,
+		DB:       100,
 	})
 	pong, err := Redisclient.Ping(Ctx).Result()
 	if err != nil {

@@ -22,12 +22,11 @@ func NewUserLoginResponse() *UserLoginResponse {
 func UserLoginHandler(c *gin.Context) {
 	//获取用户名和密码
 	username := c.Query("username")
-	get, exists := c.Get("password")
+	password, exists := c.GetQuery("password")
 	if !exists {
 		LoginErr(c, "密码不能为空")
 		return
 	}
-	password := get.(string)
 	//创建用户登录表对象
 	userlogin := Model.NewUserLoginTable(username, password)
 	//创建用户登陆表数据操作对象
@@ -45,21 +44,18 @@ func UserLoginHandler(c *gin.Context) {
 		LoginErr(c, err.Error())
 		return
 	}
-	//赋值
-	loginresponse := NewUserLoginResponse()
-	loginresponse.UserID = userlogin.UserId
-	loginresponse.Token = postUserLogin.Token
-	LoginOK(c, loginresponse)
+	c.Set("TOKEN", postUserLogin.Token)
+	LoginOK(c, userlogin.UserId, postUserLogin.Token)
 }
 
 // LoginOK 返回正确信息
-func LoginOK(c *gin.Context, login *UserLoginResponse) {
+func LoginOK(c *gin.Context, userid int64, token string) {
 	c.JSON(http.StatusOK, UserLoginResponse{
 		CommonResponse: CommonResponse{
 			StatusCode: 0,
 		},
-		UserID: login.UserID,
-		Token:  login.Token,
+		UserID: userid,
+		Token:  token,
 	})
 }
 

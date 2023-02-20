@@ -7,7 +7,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 	"net/http"
-	"time"
 )
 
 const (
@@ -35,12 +34,10 @@ type PostUserLogin struct {
 func UserRegistHandler(c *gin.Context) {
 	//获取用户名和密码
 	username := c.Query("username")
-	get, exists := c.Get("password")
-	if !exists {
-		RegisterErr(c, "密码不能为空")
-		return
+	password, exist := c.GetQuery("password")
+	if !exist {
+		RegisterErr(c, errors.New("密码不能为空").Error())
 	}
-	password := get.(string)
 	//创建新对象
 	newPostUserLogin := NewPostUserLogin(username, password)
 	//注册新用户
@@ -121,7 +118,7 @@ func (u *PostUserLogin) PersistData() error {
 
 // SetToken 获取token
 func (u *PostUserLogin) SetToken() error {
-	token, err := middleware.JwtGenerateToken(u.Userid, time.Hour)
+	token, err := middleware.JwtGenerateToken(u.Userid)
 	if err != nil {
 		return err
 	}

@@ -3,25 +3,16 @@ module douyin.core
 go 1.17
 
 require (
+	github.com/BurntSushi/toml v1.2.1
 	github.com/RaymondCode/simple-demo v0.0.0-20230109111057-5031aee01508
-	github.com/bwmarrin/snowflake v0.3.0
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
-	github.com/disintegration/imaging v1.6.2
 	github.com/gavv/httpexpect/v2 v2.8.0
 	github.com/gin-gonic/gin v1.8.1
 	github.com/minio/minio-go/v7 v7.0.48
 	github.com/sirupsen/logrus v1.9.0
 	github.com/stretchr/testify v1.8.1
-	github.com/u2takey/ffmpeg-go v0.4.1
 	gorm.io/driver/mysql v1.4.5
 	gorm.io/gorm v1.24.5
-)
-
-require (
-	github.com/aws/aws-sdk-go v1.38.20 // indirect
-	github.com/jmespath/go-jmespath v0.4.0 // indirect
-	github.com/u2takey/go-utils v0.3.1 // indirect
-	golang.org/x/image v0.0.0-20191009234506-e7c1f5e7dbb8 // indirect
 )
 
 require (
@@ -31,7 +22,6 @@ require (
 	github.com/dustin/go-humanize v1.0.0 // indirect
 	github.com/fatih/structs v1.1.0 // indirect
 	github.com/gin-contrib/sse v0.1.0 // indirect
-	github.com/giorgisio/goav v0.1.0
 	github.com/go-playground/locales v0.14.0 // indirect
 	github.com/go-playground/universal-translator v0.18.0 // indirect
 	github.com/go-playground/validator/v10 v10.11.1 // indirect

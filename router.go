@@ -1,15 +1,18 @@
 package main
 
 import (
+	"douyin.core/Model"
 	"douyin.core/handler/Comment"
 	"douyin.core/handler/Like"
 	"douyin.core/handler/User"
 	"douyin.core/handler/Video"
+	"douyin.core/middleware"
 	"github.com/RaymondCode/simple-demo/controller"
 	"github.com/gin-gonic/gin"
 )
 
 func initRouter(r *gin.Engine) {
+	Model.InitDB()
 	// public directory is used to serve static resources
 	r.Static("/static", "./public")
 
@@ -20,7 +23,7 @@ func initRouter(r *gin.Engine) {
 	apiRouter.GET("/user/", User.UserInfoHandler)
 	apiRouter.POST("/user/register/", User.UserRegistHandler)
 	apiRouter.POST("/user/login/", User.UserLoginHandler)
-	apiRouter.POST("/publish/action/", Video.PublishVedioHandler)
+	apiRouter.POST("/publish/action/", middleware.JWT(), Video.PublishVedioHandler)
 	apiRouter.GET("/publish/list/", Video.UserPublishListHandler)
 
 	// extra apis - I

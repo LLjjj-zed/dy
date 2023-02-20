@@ -2,7 +2,9 @@ package config
 
 import (
 	"fmt"
+	"github.com/BurntSushi/toml"
 	"log"
+	"strings"
 )
 
 type Mysql struct {
@@ -26,7 +28,19 @@ type Config struct {
 	Server `toml:"server"`
 }
 
+var Secret = "tiktok"
+
 var Info Config
+
+// 包初始化加载时候会调用的函数
+func init() {
+	if _, err := toml.DecodeFile("C:\\Users\\violet\\Desktop\\douyin-demo\\config\\config.toml", &Info); err != nil {
+		log.Fatal(err)
+	}
+	//去除左右的空格
+	strings.Trim(Info.Server.IP, " ")
+	strings.Trim(Info.DB.Host, " ")
+}
 
 var MaxVideoList = 15
 var MaxLikeList = 15

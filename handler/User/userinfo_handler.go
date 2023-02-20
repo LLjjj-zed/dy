@@ -15,7 +15,7 @@ type UserResponse struct {
 // UserInfoHandler 用户信息处理函数，用于处理http请求
 func UserInfoHandler(c *gin.Context) {
 	//从请求中获取用户id
-	id, exists := c.Get("user_id")
+	id, exists := c.GetQuery("user_id")
 	if !exists {
 		UserInfoErr(c, 3, "获取用户id失败")
 		return

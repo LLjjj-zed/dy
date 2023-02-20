@@ -36,7 +36,7 @@ func (v *VideoDao) QueryVideoListLogin(userid int64, last_time time.Time) (*Vide
 	videolist.Videos = make([]*Video, 0, config.MaxVideoList)
 	err := DB.Model(&Video{}).Where("created_at<?", last_time).
 		Order("created_at ASC").Limit(config.MaxVideoList).
-		Select([]string{"id", "user_id", "play_url", "cover_url", "favorite_count", "comment_count", "is_favorite", "title", "created_at", "updated_at"}).
+		Select([]string{"id", "user_id", "play_url", "cover_url", "favorite_count", "comment_count", "is_favorite", "title"}).
 		Find(&videolist).Error
 	if err != nil {
 		return nil, err
@@ -50,7 +50,7 @@ func (v *VideoDao) QueryVideoListUnLogin(last_time time.Time) (*VideoList, error
 	videolist.Videos = make([]*Video, 0, config.MaxVideoList)
 	err := DB.Model(&Video{}).Where("created_at<?", last_time).
 		Order("created_at ASC").Limit(config.MaxVideoList).
-		Select([]string{"id", "user_info_id", "play_url", "cover_url", "favorite_count", "comment_count", "is_favorite", "title", "created_at", "updated_at"}).
+		Select([]string{"id", "user_id", "play_url", "cover_url", "favorite_count", "comment_count", "is_favorite", "title"}).
 		Find(&videolist).Error
 	if err != nil {
 		return nil, err
@@ -101,7 +101,7 @@ func (v *VideoDao) GetUserVideoCode(userid int64) (int64, error) {
 // QueryUserPublishList 查询用户发布列表
 func (v *VideoDao) QueryUserPublishList(userid int64) (*VideoList, error) {
 	var videos []*Video
-	err := DB.Where("userid=?", userid).Find(&videos).Error
+	err := DB.Where("user_id=?", userid).Find(&videos).Error
 	if err != nil {
 		return nil, err
 	}
@@ -110,6 +110,6 @@ func (v *VideoDao) QueryUserPublishList(userid int64) (*VideoList, error) {
 
 func QueryVideoById(vid int64) (Video, error) {
 	var video Video
-	err := DB.Where("videoid = ?", vid).First(&video).Error
+	err := DB.Where("id = ?", vid).First(&video).Error
 	return video, err
 }

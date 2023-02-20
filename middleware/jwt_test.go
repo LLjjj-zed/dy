@@ -4,12 +4,11 @@ import (
 	"fmt"
 	"log"
 	"testing"
-	"time"
 )
 
 func TestJwtGenerateToken(t *testing.T) {
 	var userid int64 = 214312
-	token, err := JwtGenerateToken(userid, time.Hour)
+	token, err := JwtGenerateToken(userid)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -18,7 +17,7 @@ func TestJwtGenerateToken(t *testing.T) {
 
 func TestJwtParseUser(t *testing.T) {
 	var userid int64 = 214312
-	token, err := JwtGenerateToken(userid, time.Hour)
+	token, err := JwtGenerateToken(userid)
 	if err != nil {
 		log.Fatal(err)
 	}

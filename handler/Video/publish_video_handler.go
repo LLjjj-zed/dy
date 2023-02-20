@@ -40,18 +40,8 @@ type PublishVideoResponse struct {
 func PublishVedioHandler(c *gin.Context) {
 	//从请求中获取视频标题和token
 	title := c.PostForm("title")
-	token, ok := c.GetQuery("token")
-	if !ok {
-		PublishVideoErr(c, "未能成功获取token，请重试")
-		return
-	}
-	//从token中解析出用户id
-	userclaim, err := middleware.JwtParseUser(token)
-	if err != nil {
-		PublishVideoErr(c, err.Error())
-	}
-	userid := userclaim.Userid
-	//从请求中获取时视频数据
+	//todo
+	userid, _ := strconv.ParseInt(c.GetString("userId"), 10, 64)
 	file, err := c.FormFile("data")
 	if err != nil {
 		PublishVideoErr(c, err.Error())

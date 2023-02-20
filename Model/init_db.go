@@ -2,7 +2,6 @@ package Model
 
 import (
 	"douyin.core/config"
-
 	"douyin.core/dal"
 	"gorm.io/gorm"
 )

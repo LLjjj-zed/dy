@@ -27,6 +27,8 @@ func UserInfoHandler(c *gin.Context) {
 		UserInfoErr(c, 4, "获取用户信息失败")
 		return
 	}
+	token := c.GetString("token")
+	c.Set("TOKEN", token)
 	UserInfoOK(c, userinfo)
 }
 

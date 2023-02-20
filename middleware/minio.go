@@ -1,7 +1,7 @@
 package middleware
 
 import (
-	"github.com/gin-gonic/gin"
+	"context"
 	"github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/credentials"
 	"log"
@@ -26,9 +26,9 @@ func Initminio() *minio.Client {
 	return minioClient
 }
 
-func UploadVideoToMinio(ctx *gin.Context, minioClient *minio.Client, videoname, videopath, bucketName string) error {
+func UploadVideoToMinio(minioClient *minio.Client, videoname, videopath, bucketName string) error {
 	// Upload the mp4 file with FPutObject
-	info, err := minioClient.FPutObject(ctx, bucketName, videoname, videopath, minio.PutObjectOptions{ContentType: "video/mp4"})
+	info, err := minioClient.FPutObject(context.Background(), bucketName, videoname, videopath, minio.PutObjectOptions{ContentType: "video/mp4"})
 	if err != nil {
 		return err
 	}
@@ -36,9 +36,9 @@ func UploadVideoToMinio(ctx *gin.Context, minioClient *minio.Client, videoname, 
 	return nil
 }
 
-func UploadImageoMinio(minioClient *minio.Client, imagename, imagepath, bucketName string, ctx *gin.Context) error {
+func UploadImageoMinio(minioClient *minio.Client, imagename, imagepath, bucketName string) error {
 	// Upload the png file with FPutObject
-	info, err := minioClient.FPutObject(ctx, bucketName, imagename, imagepath, minio.PutObjectOptions{ContentType: "image/png"})
+	info, err := minioClient.FPutObject(context.Background(), bucketName, imagename, imagepath, minio.PutObjectOptions{ContentType: "image/jpg"})
 	if err != nil {
 		return err
 	}

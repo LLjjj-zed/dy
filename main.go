@@ -1,18 +1,17 @@
 package main
 
 import (
-	"douyin.core/config"
 	"douyin.core/Model"
 	"douyin.core/service"
-	"fmt"
 	"github.com/gin-gonic/gin"
 )
 
 func main() {
 
-	Model.InitDB()
+	//Model.InitDB()
+	Model.InitDB_test()
 	go service.RunMessageServer()
 	r := gin.Default()
 	initRouter(r)
-	r.Run(GinSocket) // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
+	r.Run("0.0.0.0:8080") // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
 }

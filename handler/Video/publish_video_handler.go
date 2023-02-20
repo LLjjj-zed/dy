@@ -3,6 +3,7 @@ package Video
 import (
 	"douyin.core/Model"
 	"douyin.core/middleware"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/minio/minio-go/v7"
 	"io"
@@ -41,7 +42,8 @@ func PublishVedioHandler(c *gin.Context) {
 	//从请求中获取视频标题和token
 	title := c.PostForm("title")
 	//todo
-	userid, _ := strconv.ParseInt(c.GetString("userId"), 10, 64)
+	userid := c.GetInt64("user_id")
+	fmt.Println(userid)
 	file, err := c.FormFile("data")
 	if err != nil {
 		PublishVideoErr(c, err.Error())
@@ -65,12 +67,11 @@ func PublishVedioHandler(c *gin.Context) {
 	var userinfo Model.UserInfoDao
 	//获取用户名，用于生成视频文件名
 	username, err := userinfo.GetUserNameByUserID(userid)
-	name := username
 	if err != nil {
 		PublishVideoErr(c, err.Error())
 	}
 	//将视频持久化到本地，使用strings.Builder替换+提高性能
-	videoname := GetFilename(name, code, ext)
+	videoname := GetFilename(username, code, ext)
 	path := filepath.Join("./public/", videoname)
 	dst, err := os.Create(path)
 	defer dst.Close()
@@ -79,16 +80,17 @@ func PublishVedioHandler(c *gin.Context) {
 		return
 	}
 	//多协程下载文件 todo
-	stat := DownloadFile(c, file, dst)
+	//stat := DownloadFile(c, file, dst)
 	// 当多协程下载失败时进行降级
-	if stat != "nil" {
-		err = c.SaveUploadedFile(file, path)
-		if err != nil {
-			PublishVideoErr(c, err.Error())
-			return
-		}
+	//if stat != "nil" {
+	//
+	//}
+	err = c.SaveUploadedFile(file, path)
+	if err != nil {
+		PublishVideoErr(c, err.Error())
+		return
 	}
-	imagename := GetFilename(name, code, ".jpg")
+	imagename := GetFilename(username, code, ".jpg")
 	//生成截图
 	err = middleware.GetSnapshotCmd(videoname, imagename)
 	if err != nil {
@@ -98,7 +100,11 @@ func PublishVedioHandler(c *gin.Context) {
 	//连接minio
 	GetminioClient()
 	//将视频上传至minio
-	err = middleware.UploadVideoToMinio(c, minioClient, videoname, path, "video")
+	err = middleware.UploadVideoToMinio(minioClient, videoname, path, "video")
+	if err != nil {
+		PublishVideoErr(c, err.Error())
+	}
+	err = middleware.UploadImageoMinio(minioClient, imagename, path, "picture")
 	if err != nil {
 		PublishVideoErr(c, err.Error())
 	}

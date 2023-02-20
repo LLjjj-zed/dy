@@ -2,8 +2,6 @@ package main
 
 import (
 	"douyin.core/Model"
-	"douyin.core/handler/Comment"
-	"douyin.core/handler/Like"
 	"douyin.core/handler/User"
 	"douyin.core/handler/Video"
 	"douyin.core/middleware"
@@ -11,11 +9,11 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-
-const GinSocket string = "192.168.0.106:9090"
+const GinSocket string = "0.0.0.0:8080"
 
 func initRouter(r *gin.Engine) {
-	Model.InitDB()
+	Model.InitDB_test()
+	//Model.InitDB()
 	// public directory is used to serve static resources
 	r.Static("/static", "./public")
 
@@ -26,9 +24,8 @@ func initRouter(r *gin.Engine) {
 	apiRouter.GET("/user/", User.UserInfoHandler)
 	apiRouter.POST("/user/register/", User.UserRegistHandler)
 	apiRouter.POST("/user/login/", User.UserLoginHandler)
-	apiRouter.POST("/publish/action/", Video.PublishVedioHandler)
+	apiRouter.POST("/publish/action/", middleware.JWTMiddleWare(), Video.PublishVedioHandler)
 	apiRouter.GET("/publish/list/", Video.UserPublishListHandler)
-
 
 	// extra apis - I
 	apiRouter.POST("/favorite/action/", controller.FavoriteAction)

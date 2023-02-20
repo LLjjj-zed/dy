@@ -6,10 +6,10 @@ import (
 )
 
 type Comment struct {
-	Content    string `json:"content"`                 // 评论内容
-	CreateDate string `json:"create_date"`             // 评论发布日期，格式 mm-dd
-	ID         int64  `json:"id"`                      // 评论id
-	User       *User  `json:"user,omitempty" gorm:"-"` // 评论用户信息
+ string `json:"content"`       // 评论内容
+	CreateDate string `json:"create_date"`   // 评论发布日期，格式 mm-dd
+	ID         int64  `json:"id"`            // 评论id
+	User       *User  `gorm:"-" json:"user"` // 评论用户信息
 }
 
 type CommentDao struct{}
@@ -17,7 +17,6 @@ type CommentDao struct{}
 func NewCommentDao() *CommentDao {
 	return &CommentDao{}
 }
-
 func (cmt *CommentDao) AddComment(userid int64, content string, user *UserInfoDao) (error, Comment) {
 	userInfo, err := user.GetUserByuserID(userid)
 	if err != nil {

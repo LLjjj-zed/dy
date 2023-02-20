@@ -9,16 +9,17 @@ import (
 )
 
 type Video struct {
-	Author        User   `json:"author,omitempty" gorm:"-"`
-	UserID        int64  `json:"user_id"`        //用户id
-	CommentCount  int64  `json:"comment_count"`  // 视频的评论总数
-	CoverURL      string `json:"cover_url"`      // 视频封面地址
-	FavoriteCount int64  `json:"favorite_count"` // 视频的点赞总数
-	ID            int64  `json:"id"`             // 视频唯一标识
-	IsFavorite    bool   `json:"is_favorite"`    // true-已点赞，false-未点赞
-	PlayURL       string `json:"play_url"`       // 视频播放地址
-	Title         string `json:"title"`          // 视频标题
-	UserVideocode int64  `json:"videocode"`      //用户视频编号
+
+	Author        *User  `gorm:"-" json:"author"` // 视频作者信息
+	UserID        int64  `json:"user_id"`         //用户id
+	CommentCount  int64  `json:"comment_count"`   // 视频的评论总数
+	CoverURL      string `json:"cover_url"`       // 视频封面地址
+	FavoriteCount int64  `json:"favorite_count"`  // 视频的点赞总数
+	ID            int64  `json:"id"`              // 视频唯一标识
+	IsFavorite    bool   `json:"is_favorite"`     // true-已点赞，false-未点赞
+	PlayURL       string `json:"play_url"`        // 视频播放地址
+	Title         string `json:"title"`           // 视频标题
+	UserVideocode int64  `json:"videocode"`       //用户视频编号
 }
 
 // VideoDao 视频表数据操作结构体
@@ -38,6 +39,7 @@ func (v *VideoDao) QueryVideoListLogin(userid int64, last_time time.Time) (*Vide
 		Order("created_at ASC").Limit(config.MaxVideoList).
 		Select([]string{"id", "user_id", "play_url", "cover_url", "favorite_count", "comment_count", "is_favorite", "title"}).
 		Find(&videolist).Error
+
 	if err != nil {
 		return nil, err
 	}

@@ -11,6 +11,9 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+
+const GinSocket string = "192.168.0.106:9090"
+
 func initRouter(r *gin.Engine) {
 	Model.InitDB()
 	// public directory is used to serve static resources
@@ -23,16 +26,17 @@ func initRouter(r *gin.Engine) {
 	apiRouter.GET("/user/", User.UserInfoHandler)
 	apiRouter.POST("/user/register/", User.UserRegistHandler)
 	apiRouter.POST("/user/login/", User.UserLoginHandler)
-	apiRouter.POST("/publish/action/", middleware.JWT(), Video.PublishVedioHandler)
+	apiRouter.POST("/publish/action/", Video.PublishVedioHandler)
 	apiRouter.GET("/publish/list/", Video.UserPublishListHandler)
 
-	// extra apis - I
-	apiRouter.POST("/favorite/action/", Like.LikeHandler)
-	apiRouter.GET("/favorite/list/", Like.GetLikeList)
-	apiRouter.POST("/comment/action/", Comment.CommentActionHandler)
-	apiRouter.GET("/comment/list/", Comment.GetCommentList)
 
-	// extra apis - II
+	// extra apis - I
+	apiRouter.POST("/favorite/action/", controller.FavoriteAction)
+	apiRouter.GET("/favorite/list/", controller.FavoriteList)
+	apiRouter.POST("/comment/action/", controller.CommentAction)
+	apiRouter.GET("/comment/list/", controller.CommentList)
+
+	// extra apis - IIz`
 	apiRouter.POST("/relation/action/", controller.RelationAction)
 	apiRouter.GET("/relation/follow/list/", controller.FollowList)
 	apiRouter.GET("/relation/follower/list/", controller.FollowerList)

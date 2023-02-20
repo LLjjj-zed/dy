@@ -113,7 +113,7 @@ func PublishVedioHandler(c *gin.Context) {
 		PublishVideoErr(c, err.Error())
 	}
 	//将视频信息持久化到数据库
-	err = videoDao.PersistNewVideo(title, userid, codeint, videoname, imagename, &userinfo)
+	err = videoDao.PersistNewVideo(title, userid, codeint, videoname, imagename)
 	if err != nil {
 		PublishVideoErr(c, err.Error())
 	}

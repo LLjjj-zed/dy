@@ -4,24 +4,30 @@ go 1.17
 
 require (
 	github.com/RaymondCode/simple-demo v0.0.0-20230109111057-5031aee01508
-	github.com/bwmarrin/snowflake v0.3.0
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
-	github.com/disintegration/imaging v1.6.2
 	github.com/gavv/httpexpect/v2 v2.8.0
 	github.com/gin-gonic/gin v1.8.1
+	github.com/go-redis/redis/v8 v8.11.5
 	github.com/minio/minio-go/v7 v7.0.48
 	github.com/sirupsen/logrus v1.9.0
+	github.com/spf13/viper v1.15.0
 	github.com/stretchr/testify v1.8.1
-	github.com/u2takey/ffmpeg-go v0.4.1
 	gorm.io/driver/mysql v1.4.5
 	gorm.io/gorm v1.24.5
 )
 
 require (
-	github.com/aws/aws-sdk-go v1.38.20 // indirect
-	github.com/jmespath/go-jmespath v0.4.0 // indirect
-	github.com/u2takey/go-utils v0.3.1 // indirect
-	golang.org/x/image v0.0.0-20191009234506-e7c1f5e7dbb8 // indirect
+	github.com/cespare/xxhash/v2 v2.1.2 // indirect
+	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
+	github.com/fsnotify/fsnotify v1.6.0 // indirect
+	github.com/hashicorp/hcl v1.0.0 // indirect
+	github.com/magiconair/properties v1.8.7 // indirect
+	github.com/mitchellh/mapstructure v1.5.0 // indirect
+	github.com/spf13/afero v1.9.3 // indirect
+	github.com/spf13/cast v1.5.0 // indirect
+	github.com/spf13/jwalterweatherman v1.1.0 // indirect
+	github.com/spf13/pflag v1.0.5 // indirect
+	github.com/subosito/gotenv v1.4.2 // indirect
 )
 
 require (
@@ -31,7 +37,6 @@ require (
 	github.com/dustin/go-humanize v1.0.0 // indirect
 	github.com/fatih/structs v1.1.0 // indirect
 	github.com/gin-contrib/sse v0.1.0 // indirect
-	github.com/giorgisio/goav v0.1.0
 	github.com/go-playground/locales v0.14.0 // indirect
 	github.com/go-playground/universal-translator v0.18.0 // indirect
 	github.com/go-playground/validator/v10 v10.11.1 // indirect
@@ -72,7 +77,7 @@ require (
 	golang.org/x/sys v0.3.0 // indirect
 	golang.org/x/text v0.5.0 // indirect
 	google.golang.org/protobuf v1.28.1 // indirect
-	gopkg.in/ini.v1 v1.66.6 // indirect
+	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 	moul.io/http2curl/v2 v2.3.0 // indirect

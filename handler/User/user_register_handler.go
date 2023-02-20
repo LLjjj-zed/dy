@@ -118,7 +118,7 @@ func (u *PostUserLogin) PersistData() error {
 
 // SetToken 获取token
 func (u *PostUserLogin) SetToken() error {
-	token, err := middleware.JwtGenerateToken(u.Userid)
+	token, err := middleware.ReleaseToken(u.Userid)
 	if err != nil {
 		return err
 	}

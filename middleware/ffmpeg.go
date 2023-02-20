@@ -9,6 +9,7 @@ import "C"
 import (
 	"errors"
 	"strings"
+	"time"
 	"unsafe"
 )
 
@@ -25,9 +26,15 @@ func GetSnapshotCmd(videoname, imagename string) error {
 	cmd := build.String()
 	cCmd := C.CString(cmd)
 	defer C.free(unsafe.Pointer(cCmd))
-	status := C.startCmd(cCmd)
-	if status != 0 {
-		return errors.New("视频切截图失败")
+	after := time.After(time.Second * 2)
+	select {
+	case <-after:
+		return errors.New("timeout")
+	default:
+		status := C.startCmd(cCmd)
+		if status != 0 {
+			return errors.New("视频切截图失败")
+		}
+		return nil
 	}
-	return nil
 }

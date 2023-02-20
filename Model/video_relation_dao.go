@@ -1,4 +1,4 @@
-package Video
+package Model
 
 // VideoRelation 用户视频关系表
 type VideoRelation struct {

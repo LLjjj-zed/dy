@@ -1,6 +1,7 @@
 package Like
 
 import (
+	"douyin.core/Model"
 	"douyin.core/middleware"
 	"github.com/gin-gonic/gin"
 	"strconv"
@@ -29,7 +30,7 @@ func LikeHandler(c *gin.Context) {
 		LikeResponse(c, 1, "未能成功获取操作类型，请重试")
 		return
 	}
-	dao := LikeDAO{}
+	dao := Model.LikeDAO{}
 	switch actionType {
 	case "1":
 		//点赞

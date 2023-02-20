@@ -1,8 +1,4 @@
-package User
-
-import (
-	"douyin.core/Model"
-)
+package Model
 
 // User 用户信息表
 type User struct {
@@ -25,7 +21,7 @@ func NewUserInfoDao() *UserInfoDao {
 // GetUserByUserName 通过用户名查找用户
 func (u *UserInfoDao) GetUserByUserName(username string) (*User, error) {
 	var User User
-	err := Model.DB.Where("username=?", username).First(&User).Error
+	err := DB.Where("username=?", username).First(&User).Error
 	if err != nil {
 		return nil, err
 	}
@@ -41,13 +37,13 @@ func (u *UserInfoDao) InsertToUserInfoTable(userid int64, username string) error
 		IsFollow:      false,
 		Name:          username,
 	}
-	return Model.DB.Create(&user).Error
+	return DB.Create(&user).Error
 }
 
 // GetUserByuserID 通过用户ID查找用户
 func (u *UserInfoDao) GetUserByuserID(userid interface{}) (*User, error) {
 	var user User
-	err := Model.DB.Where("id=?", userid).First(&user).Error
+	err := DB.Where("id=?", userid).First(&user).Error
 	if err != nil {
 		return nil, err
 	}
@@ -57,7 +53,7 @@ func (u *UserInfoDao) GetUserByuserID(userid interface{}) (*User, error) {
 // GetUserNameByUserID 通过用户id查询用户名，场景：用户上传视频的时候用于生成视频的文件名
 func (u *UserInfoDao) GetUserNameByUserID(userid int64) (string, error) {
 	var username string
-	err := Model.DB.Select("username").Where("user_id=?", userid).First(&username).Error
+	err := DB.Select("username").Where("user_id=?", userid).First(&username).Error
 	if err != nil {
 		return "", err
 	}

@@ -1,8 +1,6 @@
-package Like
+package Model
 
 import (
-	"douyin.core/Model"
-	"douyin.core/handler/Video"
 	"gorm.io/gorm"
 )
 
@@ -20,7 +18,7 @@ func NewLikeDAO() *LikeDAO {
 }
 
 func (d LikeDAO) AddLike(userid int64, videoid int64) error {
-	return Model.DB.Create(Like{
+	return DB.Create(Like{
 		VideoID: string(videoid),
 		UserID:  string(userid),
 	}).Error
@@ -28,15 +26,15 @@ func (d LikeDAO) AddLike(userid int64, videoid int64) error {
 
 func (d LikeDAO) CancelLike(videoid int64, userid int64) error {
 	var like Like
-	return Model.DB.Where(&Like{VideoID: string(videoid), UserID: string(userid)}).Delete(&like).Error
+	return DB.Where(&Like{VideoID: string(videoid), UserID: string(userid)}).Delete(&like).Error
 }
 
-func (d LikeDAO) QueryLikeList(userid int64) ([]Video.Video, error) {
+func (d LikeDAO) QueryLikeList(userid int64) ([]Video, error) {
 	var videoid []int64
-	var videoList []Video.Video
-	err := Model.DB.Where("user_id = ?", userid).Find(&videoid).Error
+	var videoList []Video
+	err := DB.Where("user_id = ?", userid).Find(&videoid).Error
 	for _, s := range videoid {
-		video, _ := Video.QueryVideoById(s)
+		video, _ := QueryVideoById(s)
 		_ = append(videoList, video)
 	}
 	return videoList, err

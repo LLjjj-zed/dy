@@ -1,6 +1,7 @@
 package User
 
 import (
+	"douyin.core/Model"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -28,9 +29,9 @@ func UserLoginHandler(c *gin.Context) {
 	}
 	password := get.(string)
 	//创建用户登录表对象
-	userlogin := NewUserLoginTable(username, password)
+	userlogin := Model.NewUserLoginTable(username, password)
 	//创建用户登陆表数据操作对象
-	userlogindao := NewUserRigisterDao()
+	userlogindao := Model.NewUserRigisterDao()
 	//验证用户账户密码
 	err := userlogindao.QueryUserLogin(username, password, userlogin)
 	if err != nil {

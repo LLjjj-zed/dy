@@ -1,6 +1,7 @@
 package Video
 
 import (
+	"douyin.core/Model"
 	"errors"
 	"github.com/gin-gonic/gin"
 	"net/http"
@@ -11,7 +12,7 @@ import (
 type UserPublishListResponse struct {
 	StatusCode int64  `json:"status_code"` // 状态码，0-成功，其他值-失败
 	StatusMsg  string `json:"status_msg"`  // 返回状态描述
-	VideoList  []*Video
+	VideoList  []*Model.Video
 }
 
 // UserPublishListHandler 发布列表处理函数
@@ -34,8 +35,8 @@ func UserPublishListHandler(c *gin.Context) {
 }
 
 // GetUserPublishList 获取发布列表
-func GetUserPublishList(userid int64) (*VideoList, error) {
-	dao := NewVideoDao()
+func GetUserPublishList(userid int64) (*Model.VideoList, error) {
+	dao := Model.NewVideoDao()
 	list, err := dao.QueryUserPublishList(userid)
 	if err != nil {
 		return nil, err
@@ -44,7 +45,7 @@ func GetUserPublishList(userid int64) (*VideoList, error) {
 }
 
 // UserPublishListOK 返回正确信息
-func UserPublishListOK(c *gin.Context, list *VideoList) {
+func UserPublishListOK(c *gin.Context, list *Model.VideoList) {
 	c.JSON(http.StatusOK, &UserPublishListResponse{
 		StatusCode: 0,
 		StatusMsg:  "success",

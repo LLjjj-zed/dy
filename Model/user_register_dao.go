@@ -1,7 +1,6 @@
-package User
+package Model
 
 import (
-	"douyin.core/Model"
 	"douyin.core/middleware"
 	"errors"
 )
@@ -35,12 +34,12 @@ func (u *UserRigestDao) RegistUsertoDb(userid int64, username, password string) 
 		Username: username,
 		Password: password,
 	}
-	return Model.DB.Create(&user).Error
+	return DB.Create(&user).Error
 }
 
 // QueryUserLogin 用户登录时检查用户的参数是否正确
 func (u UserRigestDao) QueryUserLogin(username, password string, login *UserLoginTable) error {
-	err := Model.DB.Where("username=?", username).First(&login).Error
+	err := DB.Where("username=?", username).First(&login).Error
 	if err != nil {
 		return err
 	}

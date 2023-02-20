@@ -1,6 +1,7 @@
 package User
 
 import (
+	"douyin.core/Model"
 	"douyin.core/middleware"
 	"errors"
 	"github.com/gin-gonic/gin"
@@ -87,9 +88,9 @@ func NewPostUserLogin(username, password string) *PostUserLogin {
 // PersistData 将用户数据持久化到数据库并检查是否出现用户名重复的现象
 func (u *PostUserLogin) PersistData() error {
 	//创建用户表数据操作对象
-	userDAO := NewUserInfoDao()
+	userDAO := Model.NewUserInfoDao()
 	//创建用户注册表数据操作对象
-	userRigestDao := NewUserRigisterDao()
+	userRigestDao := Model.NewUserRigisterDao()
 	//检查用户名是否已经存在
 	_, err := userDAO.GetUserByUserName(u.Username)
 	is := errors.Is(err, gorm.ErrRecordNotFound)

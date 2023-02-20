@@ -7,10 +7,10 @@ import (
 
 // UserLoginTable 用户登录表
 type UserLoginTable struct {
-	Id       int64  `grom:"primary_key"`
-	UserId   int64  `grom:"notnull"`
-	Username string `grom:"notnull"`
-	Password string `grom:"notnull"`
+	Id       int64  `gorm:"column:primary_key" json:"id"`
+	UserId   int64  `gorm:"column:user_id;notnull" json:"user_id"`
+	Username string `gorm:"column:user_name;notnull" json:"user_name"`
+	Password string `gorm:"column:password;notnull" json:"password"`
 }
 
 // UserRigestDao 用户注册表数据操作结构体
@@ -39,7 +39,7 @@ func (u *UserRigestDao) RegistUsertoDb(userid int64, username, password string) 
 
 // QueryUserLogin 用户登录时检查用户的参数是否正确
 func (u UserRigestDao) QueryUserLogin(username, password string, login *UserLoginTable) error {
-	err := DB.Where("username=?", username).First(&login).Error
+	err := DB.Where("user_name=?", username).First(&login).Error
 	if err != nil {
 		return err
 	}

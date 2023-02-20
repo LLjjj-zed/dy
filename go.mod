@@ -3,6 +3,7 @@ module douyin.core
 go 1.17
 
 require (
+	github.com/BurntSushi/toml v1.2.1
 	github.com/RaymondCode/simple-demo v0.0.0-20230109111057-5031aee01508
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/gavv/httpexpect/v2 v2.8.0

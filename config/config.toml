@@ -1,0 +1,15 @@
+#关系型数据库配置
+[mysql]
+host = "192.168.218.142"
+port = 3306
+database = "douyin-demo"
+username = "root"
+password = "123456"
+charset = "utf8mb4"
+parse_time = true
+loc = "Local"
+
+#记录当前服务器的ip和启动端口号，当前服务器的ip用于生成对应的视频链接地址
+[server]
+ip = "192.168.250.174"
+port = 8080

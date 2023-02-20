@@ -1,7 +1,12 @@
 package main
 
 import (
-
+	"douyin.core/Model"
+	"douyin.core/handler/Comment"
+	"douyin.core/handler/Like"
+	"douyin.core/handler/User"
+	"douyin.core/handler/Video"
+	"douyin.core/middleware"
 	"github.com/RaymondCode/simple-demo/controller"
 	"github.com/gin-gonic/gin"
 )
@@ -10,18 +15,20 @@ import (
 const GinSocket string = "192.168.0.106:9090"
 
 func initRouter(r *gin.Engine) {
+	Model.InitDB()
 	// public directory is used to serve static resources
 	r.Static("/static", "./public")
 
 	apiRouter := r.Group("/douyin")
 
 	// basic apis
-	apiRouter.GET("/feed/", controller.Feed)
-	apiRouter.GET("/user/", controller.UserInfo)
-	apiRouter.POST("/user/register/", controller.Register)
-	apiRouter.POST("/user/login/", controller.Login)
-	apiRouter.POST("/publish/action/", controller.Publish)
-	apiRouter.GET("/publish/list/", controller.PublishList)
+	apiRouter.GET("/feed/", Video.VideoFeedHandler)
+	apiRouter.GET("/user/", User.UserInfoHandler)
+	apiRouter.POST("/user/register/", User.UserRegistHandler)
+	apiRouter.POST("/user/login/", User.UserLoginHandler)
+	apiRouter.POST("/publish/action/", Video.PublishVedioHandler)
+	apiRouter.GET("/publish/list/", Video.UserPublishListHandler)
+
 
 	// extra apis - I
 	apiRouter.POST("/favorite/action/", controller.FavoriteAction)

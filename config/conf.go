@@ -1,6 +1,10 @@
 package config
 
 import (
+	"fmt"
+	"github.com/BurntSushi/toml"
+	"log"
+	"strings"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 	"os"
@@ -24,6 +28,21 @@ type mMysql struct {
 }
 type Config struct {
 	DB mMysql `toml:"mysqldal"`
+}
+
+
+var Secret = "tiktok"
+
+var Info Config
+
+// 包初始化加载时候会调用的函数
+func init() {
+	if _, err := toml.DecodeFile("C:\\Users\\violet\\Desktop\\douyin-demo\\config\\config.toml", &Info); err != nil {
+		log.Fatal(err)
+	}
+	//去除左右的空格
+	strings.Trim(Info.Server.IP, " ")
+	strings.Trim(Info.DB.Host, " ")
 }
 
 var MaxVideoList = 15

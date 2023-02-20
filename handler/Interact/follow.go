@@ -22,10 +22,10 @@ func FollowerCountkey(id int64) string {
 	return name
 }
 func FollowSetkey(id string) string {
-	name := fmt.Sprintf("CommonUser%d'sFollowCount", id)
+	name := fmt.Sprintf("CommonUser%d'sCount", id)
 	return name
 }
 func FollowerSetkey(id string) string {
-	name := fmt.Sprintf("CommonUser%d'sFollowerCount", id)
+	name := fmt.Sprintf("CommonUser%d'sCount", id)
 	return name
 }

@@ -9,7 +9,7 @@ import (
 )
 
 type Video struct {
-	Author        *User  `json:"author"`         // 视频作者信息
+	Author        User   `json:"author,omitempty" gorm:"-"`
 	UserID        int64  `json:"user_id"`        //用户id
 	CommentCount  int64  `json:"comment_count"`  // 视频的评论总数
 	CoverURL      string `json:"cover_url"`      // 视频封面地址
@@ -34,7 +34,10 @@ func NewVideoDao() *VideoDao {
 func (v *VideoDao) QueryVideoListLogin(userid int64, last_time time.Time) (*VideoList, error) {
 	var videolist VideoList
 	videolist.Videos = make([]*Video, 0, config.MaxVideoList)
-	err := DB.Where("publish_time<? AND user_id=?", last_time, userid).Order("publish_time desc").Limit(config.MaxVideoList).Find(&videolist.Videos).Error
+	err := DB.Model(&Video{}).Where("created_at<?", last_time).
+		Order("created_at ASC").Limit(config.MaxVideoList).
+		Select([]string{"id", "user_id", "play_url", "cover_url", "favorite_count", "comment_count", "is_favorite", "title", "created_at", "updated_at"}).
+		Find(&videolist).Error
 	if err != nil {
 		return nil, err
 	}
@@ -45,7 +48,10 @@ func (v *VideoDao) QueryVideoListLogin(userid int64, last_time time.Time) (*Vide
 func (v *VideoDao) QueryVideoListUnLogin(last_time time.Time) (*VideoList, error) {
 	var videolist VideoList
 	videolist.Videos = make([]*Video, 0, config.MaxVideoList)
-	err := DB.Where("publish_time<?", last_time).Order("publish_time desc").Limit(config.MaxVideoList).Find(&videolist.Videos).Error
+	err := DB.Model(&Video{}).Where("created_at<?", last_time).
+		Order("created_at ASC").Limit(config.MaxVideoList).
+		Select([]string{"id", "user_info_id", "play_url", "cover_url", "favorite_count", "comment_count", "is_favorite", "title", "created_at", "updated_at"}).
+		Find(&videolist).Error
 	if err != nil {
 		return nil, err
 	}
@@ -53,15 +59,11 @@ func (v *VideoDao) QueryVideoListUnLogin(last_time time.Time) (*VideoList, error
 }
 
 // PersistNewVideo 将视频数据持久化到数据库
-func (v *VideoDao) PersistNewVideo(title string, userid int64, code int64, videoname, imagename string, user *UserInfoDao) error {
-	userinfo, err := user.GetUserByuserID(userid)
-	if err != nil {
-		return err
-	}
+func (v *VideoDao) PersistNewVideo(title string, userid int64, code int64, videoname, imagename string) error {
 	playurl := GetUrl(videoname)
 	coverurl := GetUrl(imagename)
 	video := &Video{
-		Author:        userinfo,
+		UserID:        userid,
 		CommentCount:  0,
 		CoverURL:      coverurl,
 		FavoriteCount: 0,

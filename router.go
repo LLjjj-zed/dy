@@ -1,6 +1,10 @@
 package main
 
 import (
+	"douyin.core/handler/Comment"
+	"douyin.core/handler/Like"
+	"douyin.core/handler/User"
+	"douyin.core/handler/Video"
 	"github.com/RaymondCode/simple-demo/controller"
 	"github.com/gin-gonic/gin"
 )
@@ -12,18 +16,18 @@ func initRouter(r *gin.Engine) {
 	apiRouter := r.Group("/douyin")
 
 	// basic apis
-	apiRouter.GET("/feed/", controller.Feed)
-	apiRouter.GET("/user/", controller.UserInfo)
-	apiRouter.POST("/user/register/", controller.Register)
-	apiRouter.POST("/user/login/", controller.Login)
-	apiRouter.POST("/publish/action/", controller.Publish)
-	apiRouter.GET("/publish/list/", controller.PublishList)
+	apiRouter.GET("/feed/", Video.VideoFeedHandler)
+	apiRouter.GET("/user/", User.UserInfoHandler)
+	apiRouter.POST("/user/register/", User.UserRegistHandler)
+	apiRouter.POST("/user/login/", User.UserLoginHandler)
+	apiRouter.POST("/publish/action/", Video.PublishVedioHandler)
+	apiRouter.GET("/publish/list/", Video.UserPublishListHandler)
 
 	// extra apis - I
-	apiRouter.POST("/favorite/action/", controller.FavoriteAction)
-	apiRouter.GET("/favorite/list/", controller.FavoriteList)
-	apiRouter.POST("/comment/action/", controller.CommentAction)
-	apiRouter.GET("/comment/list/", controller.CommentList)
+	apiRouter.POST("/favorite/action/", Like.LikeHandler)
+	apiRouter.GET("/favorite/list/", Like.GetLikeList)
+	apiRouter.POST("/comment/action/", Comment.CommentActionHandler)
+	apiRouter.GET("/comment/list/", Comment.GetCommentList)
 
 	// extra apis - II
 	apiRouter.POST("/relation/action/", controller.RelationAction)

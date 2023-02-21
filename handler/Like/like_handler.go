@@ -8,17 +8,13 @@ import (
 )
 
 func LikeHandler(c *gin.Context) {
-	token, ok := c.GetQuery("token")
+	token := c.Query("token")
+	userclaim, ok := middleware.ParseToken(token)
 	if !ok {
-		LikeResponse(c, 1, "未能成功获取token，请重试")
-		return
-	}
-	userclaim, err := middleware.JwtParseUser(token)
-	if err != nil {
 		LikeResponse(c, 0, "token已过期，请重新登录")
 		return
 	}
-	userid := userclaim.Userid
+	userid := userclaim.UserId
 	//获取视频id
 	videoid, _ := strconv.ParseInt(c.Query("video_id"), 10, 64)
 	if !ok {

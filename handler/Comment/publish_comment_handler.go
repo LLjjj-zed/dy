@@ -5,6 +5,7 @@ import (
 	"douyin.core/middleware"
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"strconv"
 )
 
 type PublishCommentResponse struct {
@@ -20,12 +21,13 @@ func CommentActionHandler(c *gin.Context) {
 		return
 	}
 	var err error
-	userclaim, err := middleware.JwtParseUser(token)
-	if err != nil {
+	userclaim, ok := middleware.ParseToken(token)
+	if !ok {
 		CommentBadResponse(c, err.Error())
 	}
-	userid := userclaim.Userid
+	userid := userclaim.UserId
 	actionType := c.PostForm("action_type")
+	videoId, _ := strconv.ParseInt(c.Query("video_id"), 10, 64)
 	cmtDao := user.NewCommentDao()
 	var userinfo user.UserInfoDao
 
@@ -35,7 +37,7 @@ func CommentActionHandler(c *gin.Context) {
 			CommentBadResponse(c, "comment_text is required")
 			return
 		}
-		err, newcmt := cmtDao.AddComment(userid, content, &userinfo)
+		err, newcmt := cmtDao.AddComment(userid, content, &userinfo, videoId)
 		if err != nil {
 			CommentBadResponse(c, err.Error())
 			return

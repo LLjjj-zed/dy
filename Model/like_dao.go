@@ -2,11 +2,15 @@ package Model
 
 import (
 	"gorm.io/gorm"
+	"strconv"
 )
 
 // Type Like stored in gorm, contains video_id and user_id from Package Video ad User
 type Like struct {
 	gorm.Model
+	Video `gorm:"foreignKey:VideoID;references:ID"`
+	User  `gorm:"foreignKey:UserID;references:ID"`
+
 	VideoID string
 	UserID  string
 }
@@ -19,8 +23,8 @@ func NewLikeDAO() *LikeDAO {
 
 func (d LikeDAO) AddLike(userid int64, videoid int64) error {
 	return DB.Create(Like{
-		VideoID: string(videoid),
-		UserID:  string(userid),
+		VideoID: strconv.FormatInt(videoid, 10),
+		UserID:  strconv.FormatInt(userid, 10),
 	}).Error
 }
 

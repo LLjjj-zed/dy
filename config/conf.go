@@ -42,7 +42,7 @@ var Info Config
 
 // 包初始化加载时候会调用的函数
 func init() {
-	if _, err := toml.DecodeFile("C:\\Users\\violet\\Desktop\\bytedance\\douyin-demo\\config\\config.toml", &Info); err != nil {
+	if _, err := toml.DecodeFile("/Users/jerry/Learn/Go/douyin-demo/config/config.toml", &Info); err != nil {
 		log.Fatal(err)
 	}
 	//去除左右的空格
@@ -60,7 +60,6 @@ func DBConnectString() string {
 }
 
 var MaxVideoList = 15
-var MaxLikeList = 15
 
 var Reader *viper.Viper
 

@@ -2,7 +2,6 @@ package Comment
 
 import (
 	"douyin.core/Model"
-	"douyin.core/middleware"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -14,16 +13,7 @@ type CommentListResponse struct {
 }
 
 func GetCommentList(c *gin.Context) {
-	token, ok := c.GetQuery("token")
-	if !ok {
-		//ERR
-		return
-	}
 	var err error
-	_, err = middleware.JwtParseUser(token)
-	if err != nil {
-		CommentBadResponse(c, err.Error())
-	}
 	dao := Model.CommentDao{}
 	cmtList, err := dao.GetCommentList(c.Query("video_id"))
 	if err != nil {

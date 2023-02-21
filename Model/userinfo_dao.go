@@ -52,10 +52,10 @@ func (u *UserInfoDao) GetUserByuserID(userid interface{}) (*User, error) {
 
 // GetUserNameByUserID 通过用户id查询用户名，场景：用户上传视频的时候用于生成视频的文件名
 func (u *UserInfoDao) GetUserNameByUserID(userid int64) (string, error) {
-	var username string
-	err := DB.Select("user_name").Where("user_id=?", userid).First(&username).Error
+	var user User
+	err := DB.Select("user_name").Where("user_id=?", userid).First(&user).Error
 	if err != nil {
 		return "", err
 	}
-	return username, nil
+	return user.Name, nil
 }

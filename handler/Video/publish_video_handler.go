@@ -107,6 +107,8 @@ func PublishVedioHandler(c *gin.Context) {
 		PublishVideoErr(c, err.Error())
 	}
 	//将视频信息持久化到数据库
+	videoname = AddBucketName("video", videoname)
+	imagename = AddBucketName("picture", imagename)
 	err = videoDao.PersistNewVideo(title, userid, codeint, videoname, imagename)
 	if err != nil {
 		PublishVideoErr(c, err.Error())
@@ -123,6 +125,15 @@ func GetFilename(name, code, ext string) string {
 	build.WriteString(ext)
 	filename := build.String()
 	return filename
+}
+
+func AddBucketName(bucketname, objectname string) string {
+	var build strings.Builder
+	build.WriteString(bucketname)
+	build.WriteString("/")
+	build.WriteString(objectname)
+	name := build.String()
+	return name
 }
 
 func DownloadFile(c *gin.Context, file *multipart.FileHeader, dst *os.File) (Err string) {

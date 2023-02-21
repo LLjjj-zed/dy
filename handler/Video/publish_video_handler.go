@@ -3,7 +3,6 @@ package Video
 import (
 	"douyin.core/Model"
 	"douyin.core/middleware"
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/minio/minio-go/v7"
 	"io"
@@ -41,9 +40,8 @@ type PublishVideoResponse struct {
 func PublishVedioHandler(c *gin.Context) {
 	//从请求中获取视频标题和token
 	title := c.PostForm("title")
-	//todo
 	userid := c.GetInt64("user_id")
-	fmt.Println(userid)
+	//fmt.Println(userid)
 	file, err := c.FormFile("data")
 	if err != nil {
 		PublishVideoErr(c, err.Error())

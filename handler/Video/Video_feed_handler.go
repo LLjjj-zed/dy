@@ -4,6 +4,7 @@ import (
 	"douyin.core/Model"
 	"douyin.core/middleware"
 	"errors"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"strconv"
@@ -15,6 +16,7 @@ type FeedResponse struct {
 	StatusCode int64  `json:"status_code"` // 状态码，0-成功，其他值-失败
 	StatusMsg  string `json:"status_msg"`  // 返回状态描述
 	NextTime   int64
+	latestTime time.Time
 	VideoList  []*Model.Video
 }
 
@@ -26,7 +28,7 @@ func VideoFeedHandler(c *gin.Context) {
 		//将字符串转换为数字,参数二为进制，参数三为位大小
 		parseInt, _ := strconv.ParseInt(incomingTime, 10, 64)
 		//转换为时间戳
-		lastTime = time.Unix(parseInt, 0)
+		lastTime = time.Unix(0, parseInt*1e6)
 	} else {
 		lastTime = time.Now()
 	}
@@ -44,33 +46,44 @@ func VideoFeedHandler(c *gin.Context) {
 // UnLoginHandler 在用户未登录的状态下向用户推送视频的处理函数
 func UnLoginHandler(c *gin.Context, lastTime time.Time) {
 	dao := Model.NewVideoDao()
-	videolist, err := dao.QueryVideoListUnLogin(lastTime)
+	videos, err := dao.QueryVideoListUnLogin(lastTime)
 	if err != nil {
 		FeedErr(c, err.Error())
 		return
 	}
 	//判断视频列表长度，防止panic
-	if len(videolist.Videos) <= 0 {
+	if len(videos) <= 0 {
 		FeedErr(c, errors.New("当前无最新视频").Error())
 		return
 	}
-	FeedOK(c, videolist.Videos, lastTime.Unix())
+	err = dao.AddAuthorInfoToFeedList(0, &videos)
+	if err != nil {
+		FeedErr(c, err.Error())
+	}
+	FeedOK(c, videos, lastTime.Unix())
 }
 
 // LoginHandler 在用户已登录的状态下向用户推送视频的处理函数
 func LoginHandler(c *gin.Context, token string, lastTime time.Time) {
-	claims, err := middleware.JwtParseUser(token)
-	if err != nil {
-		FeedErr(c, err.Error())
+	claims, exist := middleware.ParseToken(token)
+	if !exist {
+		FeedErr(c, errors.New("token not exist").Error())
 		return
 	}
-	userId := claims.Userid
+	//todo 推送user未观看过的视频
+	userId := claims.UserId
+	//fmt.Println(userId)
 	dao := Model.NewVideoDao()
-	videoList, err := dao.QueryVideoListLogin(userId, lastTime)
+	videos, err := dao.QueryVideoListLogin(lastTime)
 	if err != nil {
 		FeedErr(c, err.Error())
 	}
-	FeedOK(c, videoList.Videos, lastTime.Unix())
+	err = dao.AddAuthorInfoToFeedList(userId, &videos)
+	if err != nil {
+		FeedErr(c, err.Error())
+	}
+	fmt.Println(videos[0])
+	FeedOK(c, videos, lastTime.Unix())
 }
 
 // FeedOK 返回正确信息
@@ -85,7 +98,7 @@ func FeedOK(c *gin.Context, videos []*Model.Video, nextTime int64) {
 
 // FeedErr 返回错误信息
 func FeedErr(c *gin.Context, ErrMessage string) {
-	c.JSON(http.StatusOK, FeedResponse{
+	c.JSON(201, FeedResponse{
 		StatusCode: 1,
 		StatusMsg:  ErrMessage,
 	})

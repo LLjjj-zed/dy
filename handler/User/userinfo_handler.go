@@ -37,11 +37,17 @@ func UserInfoOK(c *gin.Context, login *Model.User) {
 			StatusCode: 0,
 		},
 		User: &Model.User{
-			ID:            login.ID,
-			Name:          login.Name,
-			FollowerCount: login.FollowerCount,
-			FollowCount:   login.FollowCount,
-			IsFollow:      login.IsFollow,
+			ID:              login.ID,
+			Name:            login.Name,
+			FollowerCount:   login.FollowerCount,
+			FollowCount:     login.FollowCount,
+			IsFollow:        login.IsFollow,
+			Avatar:          login.Avatar,
+			BackgroundImage: login.BackgroundImage,
+			FavoriteCount:   login.FavoriteCount,
+			Signature:       login.Signature,
+			TotalFavorited:  login.TotalFavorited,
+			WorkCount:       login.WorkCount,
 		},
 	})
 }

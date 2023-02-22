@@ -44,7 +44,6 @@ func UserLoginHandler(c *gin.Context) {
 		LoginErr(c, err.Error())
 		return
 	}
-	c.Set("TOKEN", postUserLogin.Token)
 	LoginOK(c, userlogin.UserId, postUserLogin.Token)
 }
 

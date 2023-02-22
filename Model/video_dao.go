@@ -38,7 +38,7 @@ func (v *VideoDao) QueryVideoListLogin(last_time time.Time) ([]*Video, error) {
 	videos = make([]*Video, 0, config.MaxVideoList)
 	err := DB.Model(&Video{}).Where("created_at<?", last_time).
 		Order("created_at ASC").Limit(config.MaxVideoList).
-		Select([]string{"id", "user_id", "play_url", "cover_url", "favorite_count", "comment_count", "is_favorite", "title"}).
+		Select([]string{"id", "play_url", "cover_url", "favorite_count", "comment_count", "is_favorite", "title"}).
 		Find(&videos).Error
 
 	if err != nil {
@@ -53,7 +53,7 @@ func (v *VideoDao) QueryVideoListUnLogin(last_time time.Time) ([]*Video, error) 
 	videos = make([]*Video, 0, config.MaxVideoList)
 	err := DB.Model(&Video{}).Where("created_at<?", last_time).
 		Order("created_at ASC").Limit(config.MaxVideoList).
-		Select([]string{"id", "user_id", "play_url", "cover_url", "favorite_count", "comment_count", "is_favorite", "title"}).
+		Select([]string{"id", "play_url", "cover_url", "favorite_count", "comment_count", "is_favorite", "title"}).
 		Find(&videos).Error
 	if err != nil {
 		return nil, err

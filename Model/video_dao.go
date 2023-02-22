@@ -8,6 +8,33 @@ import (
 	"time"
 )
 
+var DemoVideo = []Video{
+	{
+		Author:        DemoAuthor,
+		CommentCount:  0,
+		CoverURL:      "https://cdn.pixabay.com/photo/2016/03/27/18/10/bear-1283347_1280.jpg",
+		PlayURL:       "https://www.w3schools.com/html/movie.mp4",
+		FavoriteCount: 0,
+		ID:            0,
+		IsFavorite:    false,
+		Title:         "we",
+	},
+}
+
+var DemoAuthor = &User{
+	FollowCount:     0,
+	FollowerCount:   0,
+	ID:              0,
+	IsFollow:        false,
+	Name:            "qwe",
+	Avatar:          "http://23.94.57.209:9000/browser/douyin/avatar.jpg",
+	BackgroundImage: "http://23.94.57.209:9000/browser/douyin/avatar.jpg",
+	FavoriteCount:   0,
+	Signature:       "",
+	TotalFavorited:  "",
+	WorkCount:       1,
+}
+
 type Video struct {
 	Author        *User     `gorm:"-" json:"author"` // 视频作者信息
 	UserID        int64     `json:"user_id"`         //用户id
@@ -38,7 +65,7 @@ func (v *VideoDao) QueryVideoListLogin(last_time time.Time) ([]*Video, error) {
 	videos = make([]*Video, 0, config.MaxVideoList)
 	err := DB.Model(&Video{}).Where("created_at<?", last_time).
 		Order("created_at ASC").Limit(config.MaxVideoList).
-		Select([]string{"id", "play_url", "cover_url", "favorite_count", "comment_count", "is_favorite", "title"}).
+		Select([]string{"id", "user_id", "play_url", "cover_url", "favorite_count", "comment_count", "is_favorite", "title"}).
 		Find(&videos).Error
 
 	if err != nil {
@@ -53,7 +80,7 @@ func (v *VideoDao) QueryVideoListUnLogin(last_time time.Time) ([]*Video, error) 
 	videos = make([]*Video, 0, config.MaxVideoList)
 	err := DB.Model(&Video{}).Where("created_at<?", last_time).
 		Order("created_at ASC").Limit(config.MaxVideoList).
-		Select([]string{"id", "play_url", "cover_url", "favorite_count", "comment_count", "is_favorite", "title"}).
+		Select([]string{"id", "user_id", "play_url", "cover_url", "favorite_count", "comment_count", "is_favorite", "title"}).
 		Find(&videos).Error
 	if err != nil {
 		return nil, err

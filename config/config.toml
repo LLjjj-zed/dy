@@ -1,10 +1,10 @@
 #关系型数据库配置
 [mysql]
-host = "23.94.57.209"
-port = 3311
-database = "douyin"
+host = "192.168.218.142"
+port = 3306
+database = "douyin-demo"
 username = "root"
-password = "dy12345678"
+password = "123456"
 charset = "utf8mb4"
 parse_time = true
 loc = "Local"

@@ -21,10 +21,10 @@ func initRouter(r *gin.Engine) {
 
 	// basic apis
 	apiRouter.GET("/feed/", Video.VideoFeedHandler)
-	apiRouter.GET("/user/", User.UserInfoHandler)
+	apiRouter.GET("/user/", middleware.JWTMiddleWare(), User.UserInfoHandler)
 	apiRouter.POST("/user/register/", User.UserRegistHandler)
 	apiRouter.POST("/user/login/", User.UserLoginHandler)
-	apiRouter.POST("/publish/action/", middleware.JWTMiddleWare(), Video.PublishVedioHandler)
+	apiRouter.POST("/publish/action/", Video.PublishVedioHandler)
 	apiRouter.GET("/publish/list/", Video.UserPublishListHandler)
 
 	// extra apis - I

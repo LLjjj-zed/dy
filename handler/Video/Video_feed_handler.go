@@ -4,7 +4,6 @@ import (
 	"douyin.core/Model"
 	"douyin.core/middleware"
 	"errors"
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"strconv"
@@ -13,11 +12,11 @@ import (
 
 // FeedResponse 视频流回复结构体
 type FeedResponse struct {
-	StatusCode int64  `json:"status_code"` // 状态码，0-成功，其他值-失败
-	StatusMsg  string `json:"status_msg"`  // 返回状态描述
-	NextTime   int64
+	StatusCode int64          `json:"status_code"` // 状态码，0-成功，其他值-失败
+	StatusMsg  string         `json:"status_msg"`  // 返回状态描述
+	NextTime   int64          `json:"next_time"`
+	VideoList  []*Model.Video `json:"video_list"`
 	latestTime time.Time
-	VideoList  []*Model.Video
 }
 
 // VideoFeedHandler 视频流处理函数，用于处理http请求
@@ -34,6 +33,7 @@ func VideoFeedHandler(c *gin.Context) {
 	}
 	//获取token并检查token是否存在
 	token, exist := c.GetQuery("token")
+	//fmt.Println(token)
 	if exist {
 		//token存在，向登录用户推送视频流
 		LoginHandler(c, token, lastTime)
@@ -59,6 +59,7 @@ func UnLoginHandler(c *gin.Context, lastTime time.Time) {
 	err = dao.AddAuthorInfoToFeedList(0, &videos)
 	if err != nil {
 		FeedErr(c, err.Error())
+		return
 	}
 	FeedOK(c, videos, lastTime.Unix())
 }
@@ -77,14 +78,25 @@ func LoginHandler(c *gin.Context, token string, lastTime time.Time) {
 	videos, err := dao.QueryVideoListLogin(lastTime)
 	if err != nil {
 		FeedErr(c, err.Error())
+		return
 	}
 	err = dao.AddAuthorInfoToFeedList(userId, &videos)
 	if err != nil {
 		FeedErr(c, err.Error())
+		return
 	}
-	fmt.Println(videos[0])
+	//fmt.Println(videos[0])
+	//DemoFeed(c)
 	FeedOK(c, videos, lastTime.Unix())
 }
+
+//func DemoFeed(c *gin.Context)  {
+//	c.JSON(http.StatusOK, FeedResponse{
+//		StatusCode: 0,
+//		VideoList: Model.DemoVideo,
+//		NextTime:  time.Now().Unix(),
+//	})
+//}
 
 // FeedOK 返回正确信息
 func FeedOK(c *gin.Context, videos []*Model.Video, nextTime int64) {

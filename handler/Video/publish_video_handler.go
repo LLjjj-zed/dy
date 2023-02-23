@@ -3,6 +3,7 @@ package Video
 import (
 	"douyin.core/Model"
 	"douyin.core/middleware"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/minio/minio-go/v7"
 	"io"
@@ -40,8 +41,8 @@ type PublishVideoResponse struct {
 func PublishVedioHandler(c *gin.Context) {
 	//从请求中获取视频标题和token
 	title := c.PostForm("title")
-	userid := c.GetInt64("user_id")
-	//fmt.Println(userid)
+	userid, _ := strconv.ParseInt(c.GetString("userId"), 10, 64)
+	fmt.Println(userid)
 	file, err := c.FormFile("data")
 	if err != nil {
 		PublishVideoErr(c, err.Error())
@@ -109,6 +110,7 @@ func PublishVedioHandler(c *gin.Context) {
 	//将视频信息持久化到数据库
 	videoname = AddBucketName("video", videoname)
 	imagename = AddBucketName("picture", imagename)
+	fmt.Println(userid)
 	err = videoDao.PersistNewVideo(title, userid, codeint, videoname, imagename)
 	if err != nil {
 		PublishVideoErr(c, err.Error())

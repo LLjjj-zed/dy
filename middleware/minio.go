@@ -8,7 +8,7 @@ import (
 )
 
 func Initminio() *minio.Client {
-	endpoint := "23.94.57.209:9000"
+	endpoint := "8.130.73.119:9000"
 	accessKeyID := "douyin"
 	secretAccessKey := "88888888"
 	useSSL := false

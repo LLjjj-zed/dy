@@ -5,6 +5,7 @@ import (
 	"douyin.core/handler/Comment"
 	"douyin.core/handler/Like"
 	"douyin.core/handler/User"
+	"douyin.core/handler/Video"
 	"douyin.core/middleware"
 	"github.com/gin-gonic/gin"
 )
@@ -13,24 +14,24 @@ func InitRouter(r *gin.Engine) {
 	// public directory is used to serve static resources
 	r.Static("/static", "./public")
 
+	//userRouter with no JWTMiddleWare
+	userRouter := r.Group("/douyin/user")
+	userRouter.POST("/register/", User.UserRegistHandler)
+	userRouter.POST("/login/", User.UserLoginHandler)
+	userRouter.GET("/", User.UserInfoHandler)
+
+	//apiRouter use JWTMiddleWare
 	apiRouter := r.Group("/douyin")
-	apiRouter.POST("/user/register/", User.UserRegistHandler)
-	r.Use(middleware.JWTMiddleWare())
-	//inteeraction
-	//apiRouter.POST("/favorite/action/", Like.LikeHandler)
-	//apiRouter.GET("/favorite/list/", Like.GetLikeList)
-	//apiRouter.POST("/comment/action/", Comment.CommentActionHandler)
-	//apiRouter.GET("/comment/list/", Comment.GetCommentList)
+	apiRouter.Use(middleware.JWTMiddleWare())
 	// basic apis
 	apiRouter.GET("/feed/", controller.Feed)
-	apiRouter.GET("/user/", controller.UserInfo)
 	//apiRouter.POST("/user/register/", controller.Register)
-	apiRouter.POST("/user/login/", controller.Login)
-	apiRouter.POST("/publish/action/", controller.Publish)
-	apiRouter.GET("/publish/list/", controller.PublishList)
+
+	apiRouter.POST("/publish/action/", Video.PublishVedioHandler)
+	apiRouter.GET("/publish/list/", Video.UserPublishListHandler)
 
 	// extra apis - I
-	apiRouter.POST("/favorite/action/", Like.LikeHandler)
+	apiRouter.POST("/favorite/action/", middleware.JWTMiddleWare(), Like.LikeHandler)
 	apiRouter.GET("/favorite/list/", Like.GetLikeList)
 	apiRouter.POST("/comment/action/", Comment.CommentActionHandler)
 	apiRouter.GET("/comment/list/", Comment.GetCommentList)

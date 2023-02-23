@@ -13,7 +13,7 @@ import (
 	"unsafe"
 )
 
-var path = "C:\\Users\\violet\\Desktop\\bytedance\\douyin-demo\\public\\"
+var path = "public/"
 
 func GetSnapshotCmd(videoname, imagename string) error {
 	var build strings.Builder

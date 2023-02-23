@@ -1,6 +1,6 @@
 #关系型数据库配置
 [mysql]
-host = "23.94.57.209"
+host = "8.130.73.119"
 port = 3311
 database = "douyin"
 username = "root"

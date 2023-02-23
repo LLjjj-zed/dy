@@ -41,8 +41,8 @@ type PublishVideoResponse struct {
 func PublishVedioHandler(c *gin.Context) {
 	//从请求中获取视频标题和token
 	title := c.PostForm("title")
-	userid := c.GetInt64("user_id")
-	//fmt.Println(userid)
+	userid, _ := strconv.ParseInt(c.GetString("userId"), 10, 64)
+	fmt.Println(userid)
 	file, err := c.FormFile("data")
 	if err != nil {
 		PublishVideoErr(c, err.Error())

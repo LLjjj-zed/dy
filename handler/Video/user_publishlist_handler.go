@@ -2,9 +2,10 @@ package Video
 
 import (
 	"douyin.core/Model"
-	"douyin.core/middleware"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"strconv"
 )
 
 // UserPublishListResponse 发布列表回复结构体
@@ -16,12 +17,8 @@ type UserPublishListResponse struct {
 
 // UserPublishListHandler 发布列表处理函数
 func UserPublishListHandler(c *gin.Context) {
-	token := c.Query("token")
-	UserClaims, ok := middleware.ParseToken(token)
-	if !ok {
-		UserPublishListErr(c, "parse token failed")
-	}
-	userid := UserClaims.UserId
+	userid, _ := strconv.ParseInt(c.GetString("userId"), 10, 64)
+	fmt.Println(userid)
 	videoList, err := GetUserPublishList(&userid)
 	if err != nil {
 		UserPublishListErr(c, err.Error())

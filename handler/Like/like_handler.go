@@ -2,25 +2,23 @@ package Like
 
 import (
 	"douyin.core/Model"
-	"douyin.core/middleware"
+	"fmt"
+
+	//"fmt"
 	"github.com/gin-gonic/gin"
 	"strconv"
 )
 
 func LikeHandler(c *gin.Context) {
-	token := c.Query("token")
-	userclaim, ok := middleware.ParseToken(token)
-	if !ok {
-		LikeResponse(c, 0, "token已过期，请重新登录")
-		return
-	}
-	userid := userclaim.UserId
+	strUserId := c.GetString("userId")
+	userid, _ := strconv.ParseInt(strUserId, 10, 64)
+	fmt.Println(userid)
 	//获取视频id
 	videoid, _ := strconv.ParseInt(c.Query("video_id"), 10, 64)
-	if !ok {
-		LikeResponse(c, 1, "未能成功获取视频id，请重试")
-		return
-	}
+	//if !ok {
+	//	LikeResponse(c, 1, "未能成功获取视频id，请重试")
+	//	return
+	//}
 	actionType, ok := c.GetQuery("action_type")
 	if !ok {
 		LikeResponse(c, 1, "未能成功获取操作类型，请重试")

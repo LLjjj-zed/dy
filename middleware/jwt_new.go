@@ -1,9 +1,12 @@
 package middleware
 
 import (
+	"fmt"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"strconv"
+	"strings"
 	"time"
 )
 
@@ -12,18 +15,25 @@ type Claims struct {
 	jwt.StandardClaims
 }
 
-var jwtKey = []byte("codegodrode")
+var jwtKey = []byte("code-god-rode")
+
+type Login struct {
+	Username string
+	Password string
+	Userid   int64
+	Token    string
+}
 
 // ReleaseToken 颁发token
-func ReleaseToken(Userid int64) (string, error) {
+func ReleaseToken(user Login) (string, error) {
 	expirationTime := time.Now().Add(7 * 24 * time.Hour)
 	claims := &Claims{
-		UserId: Userid,
+		UserId: user.Userid,
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: expirationTime.Unix(),
 			IssuedAt:  time.Now().Unix(),
-			Issuer:    "douyin-demo-seven-hulu",
-			Subject:   "L_B__",
+			Issuer:    "douyin-demo-lljjj",
+			Subject:   "lljjj",
 		}}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
@@ -65,6 +75,8 @@ func JWTMiddleWare() gin.HandlerFunc {
 			return
 		}
 		//验证token
+		tokenStr = strings.Fields(tokenStr)[1]
+		fmt.Println(tokenStr)
 		UserClaims, ok := ParseToken(tokenStr)
 		if !ok {
 			c.JSON(http.StatusOK, CommonResponse{
@@ -84,6 +96,28 @@ func JWTMiddleWare() gin.HandlerFunc {
 			return
 		}
 		c.Set("user_id", UserClaims.UserId)
+		c.Next()
+	}
+}
+
+func GetUserId() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		rawId := c.Query("user_id")
+		if rawId == "" {
+			rawId = c.PostForm("user_id")
+		}
+		//用户不存在
+		if rawId == "" {
+			c.JSON(http.StatusOK, CommonResponse{StatusCode: 401, StatusMsg: "用户不存在"})
+			c.Abort() //阻止执行
+			return
+		}
+		userId, err := strconv.ParseInt(rawId, 10, 64)
+		if err != nil {
+			c.JSON(http.StatusOK, CommonResponse{StatusCode: 401, StatusMsg: "用户不存在"})
+			c.Abort() //阻止执行
+		}
+		c.Set("user_id", userId)
 		c.Next()
 	}
 }

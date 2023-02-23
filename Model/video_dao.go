@@ -162,13 +162,13 @@ func (v *VideoDao) GetUserVideoCode(userid int64) (int64, error) {
 }
 
 // QueryUserPublishList 查询用户发布列表
-func (v *VideoDao) QueryUserPublishList(userid int64) (*VideoList, error) {
+func (v *VideoDao) QueryUserPublishList(userid int64) (*[]*Video, error) {
 	var videos []*Video
-	err := DB.Where("user_id=?", userid).Find(&videos).Error
+	err := DB.Model(&Video{}).Where("user_id=?", userid).Find(&videos).Error
 	if err != nil {
 		return nil, err
 	}
-	return &VideoList{Videos: videos}, nil
+	return &videos, nil
 }
 
 func QueryVideoById(vid int64) (Video, error) {

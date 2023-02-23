@@ -7,12 +7,12 @@ import (
 	"time"
 )
 
-var jwtKey = []byte("acking-you.xyz")
-
 type Claims struct {
 	UserId int64
 	jwt.StandardClaims
 }
+
+var jwtKey = []byte("codegodrode")
 
 // ReleaseToken 颁发token
 func ReleaseToken(Userid int64) (string, error) {
@@ -54,7 +54,7 @@ func ParseToken(tokenString string) (*Claims, bool) {
 // JWTMiddleWare 鉴权中间件，鉴权并设置user_id
 func JWTMiddleWare() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		tokenStr := c.Query("token")
+		tokenStr := c.GetString("token")
 		if tokenStr == "" {
 			tokenStr = c.PostForm("token")
 		}
@@ -65,7 +65,7 @@ func JWTMiddleWare() gin.HandlerFunc {
 			return
 		}
 		//验证token
-		tokenStruck, ok := ParseToken(tokenStr)
+		UserClaims, ok := ParseToken(tokenStr)
 		if !ok {
 			c.JSON(http.StatusOK, CommonResponse{
 				StatusCode: 403,
@@ -75,7 +75,7 @@ func JWTMiddleWare() gin.HandlerFunc {
 			return
 		}
 		//token超时
-		if time.Now().Unix() > tokenStruck.ExpiresAt {
+		if time.Now().Unix() > UserClaims.ExpiresAt {
 			c.JSON(http.StatusOK, CommonResponse{
 				StatusCode: 402,
 				StatusMsg:  "token过期",
@@ -83,7 +83,7 @@ func JWTMiddleWare() gin.HandlerFunc {
 			c.Abort() //阻止执行
 			return
 		}
-		c.Set("user_id", tokenStruck.UserId)
+		c.Set("user_id", UserClaims.UserId)
 		c.Next()
 	}
 }

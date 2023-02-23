@@ -56,7 +56,7 @@ func (u *UserInfoDao) InsertToUserInfoTable(userid int64, username string) error
 
 func (u *UserInfoDao) AddWorkCount(userid int64) error {
 	return DB.Transaction(func(tx *gorm.DB) error {
-		if err := tx.Exec("UPDATE user_infos SET work_count=work_count+1 WHERE user_id = ?", userid).Error; err != nil {
+		if err := tx.Exec("UPDATE users SET work_count=work_count+1 WHERE user_id = ?", userid).Error; err != nil {
 			return err
 		}
 		return nil

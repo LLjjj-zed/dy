@@ -1,6 +1,9 @@
 package Model
 
-import "gorm.io/gorm"
+import (
+	"fmt"
+	"gorm.io/gorm"
+)
 
 // User 用户信息表
 type User struct {
@@ -66,6 +69,7 @@ func (u *UserInfoDao) AddWorkCount(userid int64) error {
 // GetUserByuserID 通过用户ID查找用户
 func (u *UserInfoDao) GetUserByuserID(userid interface{}) (*User, error) {
 	var user User
+	fmt.Println(userid)
 	err := DB.Where("user_id=?", userid).First(&user).Error
 	if err != nil {
 		return nil, err

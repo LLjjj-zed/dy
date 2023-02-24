@@ -15,7 +15,7 @@ type CommonResponse struct {
 }
 
 // parseToken 解析token
-func parseToken(token string) (*jwt.StandardClaims, error) {
+func ParseToken(token string) (*jwt.StandardClaims, error) {
 	jwtToken, err := jwt.ParseWithClaims(token, &jwt.StandardClaims{}, func(token *jwt.Token) (i interface{}, e error) {
 		return []byte(config.Secret), nil
 	})
@@ -39,7 +39,7 @@ func JWT() gin.HandlerFunc {
 			})
 		}
 		auth = strings.Fields(auth)[1]
-		token, err := parseToken(auth)
+		token, err := ParseToken(auth)
 		if err != nil {
 			context.Abort()
 			context.JSON(http.StatusUnauthorized, CommonResponse{
@@ -62,7 +62,7 @@ func JWTNOTOKEN() gin.HandlerFunc {
 			userId = "0"
 		} else {
 			auth = strings.Fields(auth)[1]
-			token, err := parseToken(auth)
+			token, err := ParseToken(auth)
 			if err != nil {
 				context.Abort()
 				context.JSON(http.StatusUnauthorized, CommonResponse{
@@ -92,7 +92,7 @@ func JWTBody() gin.HandlerFunc {
 			})
 		}
 		auth = strings.Fields(auth)[1]
-		token, err := parseToken(auth)
+		token, err := ParseToken(auth)
 		if err != nil {
 			context.Abort()
 			context.JSON(http.StatusUnauthorized, CommonResponse{

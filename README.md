@@ -109,8 +109,8 @@ Github  地址：https://github.com/132982317/douyin-demo
 
 
 四、测试结果</br>
-功能测试：测试用例 ./test/api_test.go
-
+![](public/test.png)
+![](public/image.png)
 
 五、Demo 演示视频 （必填）
 

@@ -32,5 +32,5 @@ func InitDB_test() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	dal.InitRedis()
+	//dal.InitRedis()
 }

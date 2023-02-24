@@ -45,7 +45,7 @@ func ReleaseToken(user Login) (string, error) {
 }
 
 // ParseToken 解析token
-func ParseToken(tokenString string) (*Claims, bool) {
+func New_ParseToken(tokenString string) (*Claims, bool) {
 	token, _ := jwt.ParseWithClaims(tokenString, &Claims{}, func(token *jwt.Token) (interface{}, error) {
 		return jwtKey, nil
 	})
@@ -77,7 +77,7 @@ func JWTMiddleWare() gin.HandlerFunc {
 		//验证token
 		tokenStr = strings.Fields(tokenStr)[1]
 		fmt.Println(tokenStr)
-		UserClaims, ok := ParseToken(tokenStr)
+		UserClaims, ok := New_ParseToken(tokenStr)
 		if !ok {
 			c.JSON(http.StatusOK, CommonResponse{
 				StatusCode: 403,

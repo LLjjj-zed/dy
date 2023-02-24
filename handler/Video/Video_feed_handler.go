@@ -2,7 +2,6 @@ package Video
 
 import (
 	"douyin.core/Model"
-	"douyin.core/middleware"
 	"errors"
 	"github.com/gin-gonic/gin"
 	"net/http"
@@ -66,13 +65,13 @@ func UnLoginHandler(c *gin.Context, lastTime time.Time) {
 
 // LoginHandler 在用户已登录的状态下向用户推送视频的处理函数
 func LoginHandler(c *gin.Context, token string, lastTime time.Time) {
-	claims, exist := middleware.ParseToken(token)
-	if !exist {
-		FeedErr(c, errors.New("token not exist").Error())
-		return
-	}
+	//claims, err := middleware.ParseToken(token)
+	//if err != nil {
+	//	FeedErr(c, errors.New("token not exist").Error())
+	//	return
+	//}
 	//todo 推送user未观看过的视频
-	userId := claims.UserId
+	userId, _ := strconv.ParseInt(c.GetString("userId"), 10, 64)
 	//fmt.Println(userId)
 	dao := Model.NewVideoDao()
 	videos, err := dao.QueryVideoListLogin(lastTime)

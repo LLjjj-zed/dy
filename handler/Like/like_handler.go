@@ -7,7 +7,7 @@ import (
 )
 
 func LikeHandler(c *gin.Context) {
-	userid := c.GetInt64("user_id")
+	userid, _ := strconv.ParseInt(c.Query("user_id"), 10, 64)
 	//获取视频id
 	videoid, err := strconv.ParseInt(c.Query("video_id"), 10, 64)
 	if err != nil {

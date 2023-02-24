@@ -14,7 +14,7 @@ type PublishCommentResponse struct {
 }
 
 func CommentActionHandler(c *gin.Context) {
-	userid := c.GetInt64("user_id")
+	userid, _ := strconv.ParseInt(c.Query("user_id"), 10, 64)
 	actionType := c.Query("action_type")
 	videoId, _ := strconv.ParseInt(c.Query("video_id"), 10, 64)
 	cmtDao := user.NewCommentDao()

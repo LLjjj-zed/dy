@@ -10,11 +10,11 @@ type Comment struct {
 	gorm.Model
 	Video `gorm:"foreignKey:VideoID;references:ID"`
 
-	Content    string `json:"content"`       // 评论内容
-	CreateDate string `json:"create_date"`   // 评论发布日期，格式 mm-dd
-	ID         int64  `json:"id"`            // 评论id
-	User       *User  `gorm:"-" json:"user"` // 评论用户信息
-	VideoID    int64  `json:"video_id"`      // 视频id
+	Content    string `json:"content"`     // 评论内容
+	CreateDate string `json:"create_date"` // 评论发布日期，格式 mm-dd
+	ID         int64  `json:"id"`          // 评论id
+	User       *User  `json:"user"`        // 评论用户信息
+	VideoID    int64  `json:"video_id"`    // 视频id
 }
 
 type CommentDao struct{}
@@ -33,7 +33,7 @@ func (cmt *CommentDao) AddComment(userid int64, content string, user *UserInfoDa
 		User:       userInfo,
 		VideoID:    videoId,
 	}
-	return DB.Create(newCmt).Error, newCmt
+	return DB.Create(&newCmt).Error, newCmt
 }
 
 func (cmt *CommentDao) DeleteComment(cmtid string) error {

@@ -1,6 +1,7 @@
 package Model
 
 import (
+	"errors"
 	"gorm.io/gorm"
 )
 
@@ -25,7 +26,7 @@ func (d LikeDAO) AddLike(userid int64, videoid int64) error {
 	//点赞是否存在
 	exist := DB.Where("user_id = ? AND video_id = ?", userid, videoid).First(&Like{})
 	if exist != nil {
-		return nil
+		return errors.New("Already liked")
 	}
 	var like = Like{
 		VideoID: videoid,

@@ -106,16 +106,10 @@ Github  地址：https://github.com/132982317/douyin-demo
 6. public为临时数据层，将用户上传的视频进行处理后会存放在这里面，随后将文件上传至服务器</br>
 
 
-## 四、测试结果</br>
-功能测试：测试用例 ./test/api_test.go
 
-
-## 五、Demo 演示视频 （必填）
-
-
-
-
-
+四、测试结果</br>
+![](public/test.png)
+![](public/image.png)
 
 
 ## 六、项目总结与反思</br>

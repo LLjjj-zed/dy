@@ -2,11 +2,16 @@ package User
 
 import (
 	"douyin.core/Model"
+	"douyin.core/config"
 	"douyin.core/middleware"
 	"errors"
+	"fmt"
+	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 	"net/http"
+	"strconv"
+	"time"
 )
 
 const (
@@ -69,11 +74,11 @@ func (u *PostUserLogin) Register() error {
 	}
 
 	//获取token
-	err = u.SetToken()
+	token, err := u.NewToken()
 	if err != nil {
 		return err
 	}
-
+	u.Token = token
 	return nil
 }
 
@@ -116,15 +121,16 @@ func (u *PostUserLogin) PersistData() error {
 	}
 }
 
-// SetToken 获取token
-func (u *PostUserLogin) SetToken() error {
-	token, err := middleware.ReleaseToken(u.Userid)
-	if err != nil {
-		return err
-	}
-	u.Token = token
-	return nil
-}
+//// SetToken 获取token
+//func (u *PostUserLogin) SetToken() error {
+//	var login PostUserLogin
+//	token, err := middleware.ReleaseToken(middleware.Login(login))
+//	if err != nil {
+//		return err
+//	}
+//	u.Token = token
+//	return nil
+//}
 
 // UserIdGenarate 用户id生成
 func (u *PostUserLogin) UserIdGenarate() {
@@ -149,6 +155,33 @@ func (u *PostUserLogin) CheckPost() error {
 		return errors.New("密码不能少于5位")
 	}
 	return nil
+}
+
+// NewToken 根据信息创建token
+func (u *PostUserLogin) NewToken() (string, error) {
+	expiresTime := time.Now().Unix() + int64(7*24*time.Hour)
+	fmt.Printf("expiresTime: %v\n", expiresTime)
+	id64 := u.Userid
+	fmt.Printf("id: %v\n", strconv.FormatInt(id64, 10))
+	claims := jwt.StandardClaims{
+		Audience:  u.Username,
+		ExpiresAt: expiresTime,
+		Id:        strconv.FormatInt(id64, 10),
+		IssuedAt:  time.Now().Unix(),
+		Issuer:    "tiktok",
+		NotBefore: time.Now().Unix(),
+		Subject:   "token",
+	}
+	var jwtSecret = []byte(config.Secret)
+	tokenClaims := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	if token, err := tokenClaims.SignedString(jwtSecret); err == nil {
+		token = "Bearer " + token
+		println("generate token success!\n")
+		return token, nil
+	} else {
+		println("generate token fail\n")
+		return "fail", err
+	}
 }
 
 // RegisterOK 返回正确信息

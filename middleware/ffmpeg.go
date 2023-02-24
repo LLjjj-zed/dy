@@ -8,6 +8,7 @@ import "C"
 
 import (
 	"errors"
+	"fmt"
 	"strings"
 	"time"
 	"unsafe"
@@ -26,14 +27,17 @@ func GetSnapshotCmd(videoname, imagename string) error {
 	cmd := build.String()
 	cCmd := C.CString(cmd)
 	defer C.free(unsafe.Pointer(cCmd))
-	after := time.After(time.Second * 2)
-	select {
-	case <-after:
-		return errors.New("timeout")
-	default:
-		status := C.startCmd(cCmd)
-		if status != 0 {
-			return errors.New("视频切截图失败")
+	timeout := time.After(time.Second * 3)
+	for {
+		select {
+		case <-timeout:
+			status := C.startCmd(cCmd)
+			if status != 0 {
+				return errors.New("视频切截图失败")
+			}
+		case dd := <-time.After(time.Second * 3):
+			C.free(unsafe.Pointer(cCmd))
+			fmt.Println("out of time ", dd)
 		}
 		return nil
 	}

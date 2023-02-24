@@ -39,13 +39,12 @@ func UserLoginHandler(c *gin.Context) {
 	}
 	//获取token
 	postUserLogin := NewPostUserLogin(username, password)
-	err = postUserLogin.SetToken()
+	token, err := postUserLogin.NewToken()
 	if err != nil {
 		LoginErr(c, err.Error())
 		return
 	}
-	c.Set("TOKEN", postUserLogin.Token)
-	LoginOK(c, userlogin.UserId, postUserLogin.Token)
+	LoginOK(c, userlogin.UserId, token)
 }
 
 // LoginOK 返回正确信息

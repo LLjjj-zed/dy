@@ -3,7 +3,7 @@ package Model
 import (
 	"douyin.core/config"
 	"errors"
-	"gorm.io/gorm"
+	"fmt"
 	"strings"
 	"time"
 )
@@ -33,32 +33,54 @@ func NewVideoDao() *VideoDao {
 }
 
 // QueryVideoListLogin 查询用户视频关系表排除用户看过的视频
-func (v *VideoDao) QueryVideoListLogin(userid int64, last_time time.Time) (*VideoList, error) {
-	var videolist VideoList
-	videolist.Videos = make([]*Video, 0, config.MaxVideoList)
+func (v *VideoDao) QueryVideoListLogin(last_time time.Time) ([]*Video, error) {
+	var videos []*Video
+	videos = make([]*Video, 0, config.MaxVideoList)
 	err := DB.Model(&Video{}).Where("created_at<?", last_time).
 		Order("created_at ASC").Limit(config.MaxVideoList).
 		Select([]string{"id", "user_id", "play_url", "cover_url", "favorite_count", "comment_count", "is_favorite", "title"}).
-		Find(&videolist).Error
+		Find(&videos).Error
 
 	if err != nil {
 		return nil, err
 	}
-	return &videolist, nil
+	return videos, nil
 }
 
 // QueryVideoListUnLogin 在未登录的状态下推送视频查询
-func (v *VideoDao) QueryVideoListUnLogin(last_time time.Time) (*VideoList, error) {
-	var videolist VideoList
-	videolist.Videos = make([]*Video, 0, config.MaxVideoList)
+func (v *VideoDao) QueryVideoListUnLogin(last_time time.Time) ([]*Video, error) {
+	var videos []*Video
+	videos = make([]*Video, 0, config.MaxVideoList)
 	err := DB.Model(&Video{}).Where("created_at<?", last_time).
 		Order("created_at ASC").Limit(config.MaxVideoList).
 		Select([]string{"id", "user_id", "play_url", "cover_url", "favorite_count", "comment_count", "is_favorite", "title"}).
-		Find(&videolist).Error
+		Find(&videos).Error
 	if err != nil {
 		return nil, err
 	}
-	return &videolist, nil
+	return videos, nil
+}
+
+func (v *VideoDao) AddAuthorInfoToFeedList(userid int64, videos *[]*Video) error {
+	n := len(*videos)
+	if videos == nil || n == 0 {
+		return errors.New("不能使用空指针，视频列表为空")
+	}
+	userdao := NewUserInfoDao()
+	//todo user upadteat
+	//lasttime :=(*videos)[n-1].CreatedAt
+	for i := 0; i < n; i++ {
+		user, err := userdao.GetUserByuserID((*videos)[i].UserID)
+		if err != nil {
+			return err
+		}
+		//todo 获取是否点赞
+		if userid != 0 {
+
+		}
+		(*videos)[i].Author = user
+	}
+	return nil
 }
 
 // PersistNewVideo 将视频数据持久化到数据库
@@ -74,14 +96,25 @@ func (v *VideoDao) PersistNewVideo(title string, userid int64, code int64, video
 		PlayURL:       playurl,
 		Title:         title,
 		UserVideocode: code,
+		CreatedAt:     time.Now(),
+		UpdatedAt:     time.Now(),
 	}
-	return DB.Create(video).Error
+	err := DB.Table("videos").Create(video).Error
+	if err != nil {
+		return err
+	}
+	userdao := NewUserInfoDao()
+	err = userdao.AddWorkCount(userid)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 // GetUrl 获取url
 func GetUrl(name string) string {
 	var build strings.Builder
-	build.WriteString("http://23.94.57.209:9000/")
+	build.WriteString("http://8.130.73.119:9000/")
 	build.WriteString(name)
 	url := build.String()
 	return url
@@ -90,25 +123,25 @@ func GetUrl(name string) string {
 // GetUserVideoCode 获取用户视频序号吗，场景：用于用户将视频上传的时候生成视频文件名
 func (v *VideoDao) GetUserVideoCode(userid int64) (int64, error) {
 	var video Video
-	err := DB.Select("user_videocode").Where("user_id=?", userid).First(&video).Error
-	is := errors.Is(err, gorm.ErrRecordNotFound)
-	if is {
+	result := DB.Select("user_videocode").Where("user_id=?", userid).Last(&video)
+	if err := result.Error; err != nil {
+		fmt.Println(err.Error())
+		if err.Error() != "record not found" {
+			return -1, err
+		}
 		return 0, nil
-	}
-	if err != nil {
-		return -1, err
 	}
 	return video.UserVideocode + 1, nil
 }
 
 // QueryUserPublishList 查询用户发布列表
-func (v *VideoDao) QueryUserPublishList(userid int64) (*VideoList, error) {
+func (v *VideoDao) QueryUserPublishList(userid int64) (*[]*Video, error) {
 	var videos []*Video
-	err := DB.Where("user_id=?", userid).Find(&videos).Error
+	err := DB.Model(&Video{}).Where("user_id=?", userid).Find(&videos).Error
 	if err != nil {
 		return nil, err
 	}
-	return &VideoList{Videos: videos}, nil
+	return &videos, nil
 }
 
 func QueryVideoById(vid int64) (Video, error) {

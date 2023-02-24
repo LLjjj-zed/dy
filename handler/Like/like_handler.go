@@ -2,6 +2,7 @@ package Like
 
 import (
 	"douyin.core/Model"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"strconv"
 )

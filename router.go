@@ -2,6 +2,8 @@ package main
 
 import (
 	"douyin.core/Model"
+	"douyin.core/handler/Comment"
+	"douyin.core/handler/Like"
 	"douyin.core/handler/User"
 	"douyin.core/handler/Video"
 	"douyin.core/middleware"
@@ -20,18 +22,18 @@ func initRouter(r *gin.Engine) {
 	apiRouter := r.Group("/douyin")
 
 	// basic apis
-	apiRouter.GET("/feed/", Video.VideoFeedHandler)
-	apiRouter.GET("/user/", User.UserInfoHandler)
+	apiRouter.GET("/feed/", middleware.JWTNOTOKEN(), Video.VideoFeedHandler)
+	apiRouter.GET("/user/", middleware.JWT(), User.UserInfoHandler)
 	apiRouter.POST("/user/register/", User.UserRegistHandler)
 	apiRouter.POST("/user/login/", User.UserLoginHandler)
-	apiRouter.POST("/publish/action/", middleware.JWTMiddleWare(), Video.PublishVedioHandler)
-	apiRouter.GET("/publish/list/", Video.UserPublishListHandler)
+	apiRouter.POST("/publish/action/", middleware.JWTBody(), Video.PublishVedioHandler)
+	apiRouter.GET("/publish/list/", middleware.JWT(), Video.UserPublishListHandler)
 
 	// extra apis - I
-	apiRouter.POST("/favorite/action/", controller.FavoriteAction)
-	apiRouter.GET("/favorite/list/", controller.FavoriteList)
-	apiRouter.POST("/comment/action/", controller.CommentAction)
-	apiRouter.GET("/comment/list/", controller.CommentList)
+	apiRouter.POST("/favorite/action/", middleware.JWT(), Like.LikeHandler)
+	apiRouter.GET("/favorite/list/", middleware.JWT(), Like.GetLikeList)
+	apiRouter.POST("/comment/action/", middleware.JWT(), Comment.CommentActionHandler)
+	apiRouter.GET("/comment/list/", middleware.JWTNOTOKEN(), Comment.GetCommentList)
 
 	// extra apis - IIz`
 	apiRouter.POST("/relation/action/", controller.RelationAction)

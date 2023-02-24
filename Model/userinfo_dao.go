@@ -1,12 +1,20 @@
 package Model
 
+import "gorm.io/gorm"
+
 // User 用户信息表
 type User struct {
-	FollowCount   int64  `gorm:"column:follow_count" json:"follow_count"`     // 关注总数
-	FollowerCount int64  `gorm:"column:follower_count" json:"follower_count"` // 粉丝总数
-	ID            int64  `gorm:"column:user_id" json:"user_id"`               // 用户id
-	IsFollow      bool   `gorm:"column:is_follow" json:"is_follow"`           // true-已关注，false-未关注
-	Name          string `gorm:"column:user_name" json:"user_name"`           // 用户名称
+	FollowCount     int64  `gorm:"column:follow_count" json:"follow_count"`     // 关注总数
+	FollowerCount   int64  `gorm:"column:follower_count" json:"follower_count"` // 粉丝总数
+	ID              int64  `gorm:"column:user_id" json:"user_id"`               // 用户id
+	IsFollow        bool   `gorm:"column:is_follow" json:"is_follow"`           // true-已关注，false-未关注
+	Name            string `gorm:"column:user_name" json:"user_name"`           // 用户名称
+	Avatar          string `json:"avatar"`                                      // 用户头像
+	BackgroundImage string `json:"background_image"`                            // 用户个人页顶部大图
+	FavoriteCount   int64  `json:"favorite_count"`                              // 喜欢数
+	Signature       string `json:"signature"`                                   // 个人简介
+	TotalFavorited  string `json:"total_favorited"`                             // 获赞数量
+	WorkCount       int64  `json:"work_count"`                                  // 作品数
 }
 
 // UserInfoDao 用户信息数据操作结构体
@@ -31,13 +39,28 @@ func (u *UserInfoDao) GetUserByUserName(username string) (*User, error) {
 // InsertToUserInfoTable 将用户信息持久化到数据库
 func (u *UserInfoDao) InsertToUserInfoTable(userid int64, username string) error {
 	user := User{
-		FollowCount:   0,
-		FollowerCount: 0,
-		ID:            userid,
-		IsFollow:      false,
-		Name:          username,
+		FollowCount:     0,
+		FollowerCount:   0,
+		ID:              userid,
+		IsFollow:        false,
+		Name:            username,
+		Avatar:          "http://23.94.57.209:9000/browser/douyin/avatar.jpg",
+		BackgroundImage: "http://23.94.57.209:9000/browser/douyin/avatar.jpg",
+		FavoriteCount:   0,
+		Signature:       "",
+		TotalFavorited:  "0",
+		WorkCount:       0,
 	}
 	return DB.Create(&user).Error
+}
+
+func (u *UserInfoDao) AddWorkCount(userid int64) error {
+	return DB.Transaction(func(tx *gorm.DB) error {
+		if err := tx.Exec("UPDATE users SET work_count=work_count+1 WHERE user_id = ?", userid).Error; err != nil {
+			return err
+		}
+		return nil
+	})
 }
 
 // GetUserByuserID 通过用户ID查找用户

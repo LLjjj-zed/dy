@@ -2,7 +2,6 @@ package Comment
 
 import (
 	user "douyin.core/Model"
-	"douyin.core/middleware"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"strconv"
@@ -15,18 +14,8 @@ type PublishCommentResponse struct {
 }
 
 func CommentActionHandler(c *gin.Context) {
-	token, ok := c.GetQuery("token")
-	if !ok {
-		//ERR
-		return
-	}
-	var err error
-	userclaim, ok := middleware.ParseToken(token)
-	if !ok {
-		CommentBadResponse(c, err.Error())
-	}
-	userid := userclaim.UserId
-	actionType := c.PostForm("action_type")
+	userid := c.GetInt64("user_id")
+	actionType := c.Query("action_type")
 	videoId, _ := strconv.ParseInt(c.Query("video_id"), 10, 64)
 	cmtDao := user.NewCommentDao()
 	var userinfo user.UserInfoDao

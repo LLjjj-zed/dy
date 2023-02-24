@@ -29,7 +29,7 @@ func NewUserInfoDao() *UserInfoDao {
 // GetUserByUserName 通过用户名查找用户
 func (u *UserInfoDao) GetUserByUserName(username string) (*User, error) {
 	var User User
-	err := DB.Where("user_name=?", username).First(&User).Error
+	err := DB.Where("user_name= ? ", username).First(&User).Error
 	if err != nil {
 		return nil, err
 	}

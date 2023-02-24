@@ -1,6 +1,6 @@
 mysql:
-    dsn: "root:dy12345678@tcp(23.94.57.209:3311)/douyin?charset=utf8&parseTime=true&loc=Local"
+    dsn: "root:dy12345678@tcp(8.130.73.119:3311)/douyin?charset=utf8&parseTime=true&loc=Local"
 redis:
-    addr: "23.94.57.209:5070"
+    addr: "8.130.73.119:5070"
     password: "12345678"
     DB: "10"

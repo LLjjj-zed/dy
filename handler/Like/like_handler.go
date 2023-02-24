@@ -3,22 +3,18 @@ package Like
 import (
 	"douyin.core/Model"
 	"fmt"
-
-	//"fmt"
 	"github.com/gin-gonic/gin"
 	"strconv"
 )
 
 func LikeHandler(c *gin.Context) {
-	strUserId := c.GetString("userId")
-	userid, _ := strconv.ParseInt(strUserId, 10, 64)
-	fmt.Println(userid)
+	userid := c.GetInt64("user_id")
 	//获取视频id
-	videoid, _ := strconv.ParseInt(c.Query("video_id"), 10, 64)
-	//if !ok {
-	//	LikeResponse(c, 1, "未能成功获取视频id，请重试")
-	//	return
-	//}
+	videoid, err := strconv.ParseInt(c.Query("video_id"), 10, 64)
+	if err != nil {
+		LikeResponse(c, 1, "未能成功获取视频id，请重试")
+		return
+	}
 	actionType, ok := c.GetQuery("action_type")
 	if !ok {
 		LikeResponse(c, 1, "未能成功获取操作类型，请重试")
@@ -28,8 +24,10 @@ func LikeHandler(c *gin.Context) {
 	switch actionType {
 	case "1":
 		//点赞
+		println("userID Get: ", userid)
 		err := dao.AddLike(userid, videoid)
 		if err != nil {
+			println(err)
 			LikeResponse(c, 1, "点赞失败")
 			return
 		}

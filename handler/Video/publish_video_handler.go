@@ -2,7 +2,7 @@ package Video
 
 import (
 	"douyin.core/Model"
-	"douyin.core/middleware"
+	"douyin.core/utils"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/minio/minio-go/v7"
@@ -27,7 +27,7 @@ const numWorkers = 4
 // GetminioClient 连接minio客户端
 func GetminioClient() {
 	NewminioClient.Do(func() {
-		minioClient = middleware.Initminio()
+		minioClient = utils.Initminio()
 	})
 }
 
@@ -91,7 +91,7 @@ func PublishVedioHandler(c *gin.Context) {
 	}
 	imagename := GetFilename(username, code, ".jpg")
 	//生成截图
-	err = middleware.GetSnapshotCmd(videoname, imagename)
+	err = utils.GetSnapshotCmd(videoname, imagename)
 	if err != nil {
 		PublishVideoErr(c, err.Error())
 		return
@@ -99,11 +99,11 @@ func PublishVedioHandler(c *gin.Context) {
 	//连接minio
 	GetminioClient()
 	//将视频上传至minio
-	err = middleware.UploadVideoToMinio(minioClient, videoname, path, "video")
+	err = utils.UploadVideoToMinio(minioClient, videoname, path, "video")
 	if err != nil {
 		PublishVideoErr(c, err.Error())
 	}
-	err = middleware.UploadImageoMinio(minioClient, imagename, path, "picture")
+	err = utils.UploadImageoMinio(minioClient, imagename, path, "picture")
 	if err != nil {
 		PublishVideoErr(c, err.Error())
 	}

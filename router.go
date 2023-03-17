@@ -6,8 +6,8 @@ import (
 	"douyin.core/handler/Like"
 	"douyin.core/handler/User"
 	"douyin.core/handler/Video"
+	"douyin.core/handler/social"
 	"douyin.core/middleware"
-	"github.com/RaymondCode/simple-demo/controller"
 	"github.com/gin-gonic/gin"
 )
 
@@ -36,10 +36,10 @@ func initRouter(r *gin.Engine) {
 	apiRouter.GET("/comment/list/", middleware.JWTNOTOKEN(), Comment.GetCommentList)
 
 	// extra apis - IIz`
-	apiRouter.POST("/relation/action/", controller.RelationAction)
-	apiRouter.GET("/relation/follow/list/", controller.FollowList)
-	apiRouter.GET("/relation/follower/list/", controller.FollowerList)
-	apiRouter.GET("/relation/friend/list/", controller.FriendList)
-	apiRouter.GET("/message/chat/", controller.MessageChat)
-	apiRouter.POST("/message/action/", controller.MessageAction)
+	apiRouter.POST("/relation/action/", social.RelationAction)
+	apiRouter.GET("/relation/follow/list/", social.FollowList)
+	apiRouter.GET("/relation/follower/list/", social.FollowerList)
+	apiRouter.GET("/relation/friend/list/", social.FriendList)
+	apiRouter.GET("/message/chat/", social.MessageChat)
+	apiRouter.POST("/message/action/", social.MessageAction)
 }

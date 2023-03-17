@@ -3,7 +3,7 @@ package User
 import (
 	"douyin.core/Model"
 	"douyin.core/config"
-	"douyin.core/middleware"
+	"douyin.core/utils"
 	"errors"
 	"fmt"
 	"github.com/dgrijalva/jwt-go"
@@ -104,7 +104,7 @@ func (u *PostUserLogin) PersistData() error {
 		}
 		//对用户密码进行AES-256加密，保障用户安全
 		passwordstr := []byte(u.Password)
-		aes, err := middleware.EnPwdCode(passwordstr)
+		aes, err := utils.EnPwdCode(passwordstr)
 		if err != nil {
 			return err
 		}
@@ -134,7 +134,7 @@ func (u *PostUserLogin) PersistData() error {
 
 // UserIdGenarate 用户id生成
 func (u *PostUserLogin) UserIdGenarate() {
-	worker, _ := middleware.NewWorker(1)
+	worker, _ := utils.NewWorker(1)
 	id := worker.GetId()
 	u.Userid = id
 }

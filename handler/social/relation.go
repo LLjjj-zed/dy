@@ -1,4 +1,4 @@
-package controller
+package social
 
 import (
 	"douyin.core/Model"
